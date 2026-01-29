@@ -9,7 +9,7 @@ const logoBase = "https://ff.spindleco.com/sbs/images/logos/";
 
 // Game State Constants
 const PAYOUT_KEYS = ['q1', 'q2', 'q3', 'final'];
-let PAYOUT_VALS = {}; 
+let PAYOUT_VALS = { q1: 0, q2: 0, q3: 0, final: 0 };
 let squareOwners = {};
 let allParticipants = [];
 
@@ -17,17 +17,26 @@ let allParticipants = [];
  * Initialization: Runs on page load
  */
 async function init() {
-    // 1. First fetch to get Match Settings & Square Owners
-    await updateScore(); 
-    
-    // 2. Build the visual grid structure
-    renderStaticGrid();
+    try {
+        const res = await fetch(`api_proxy.php?id=${currentMatchId}`);
+        const data = await res.json();
+        
+        // GRACEFUL FAIL: Ensure we have at least empty objects to work with
+        if (data.squares) {
+            squareOwners = data.squares.grid ?? {};
+            allParticipants = data.squares.participants ?? [];
+        }
 
-    // 3. Perform a second UI pass to ensure markers are placed on the new grid
-    await updateScore(); 
+        // We must draw the grid even if data is missing
+        renderStaticGrid();
 
-    // 4. Set Interval for "Real-Time" Polling (Every 60 Seconds)
-    setInterval(updateScore, 60000);
+        // Continue with the rest of the UI update
+        updateScore();
+        setInterval(updateScore, 60000);
+    } catch (err) {
+        console.error("Initial load failed. Rendering empty grid.", err);
+        renderStaticGrid(); // Draw empty grid as fallback
+    }
 }
 
 /**
@@ -183,14 +192,20 @@ function updateWinnersAndPayouts(away, home) {
  * Renders the combined Participant List + Earnings
  */
 function renderPayoutLeaderboard(winners) {
+    const container = document.getElementById('payout-list');
+    if (!container) return;
+
+    // GRACEFUL FAIL: Handle empty participant list
+    if (allParticipants.length === 0) {
+        container.innerHTML = `<div class="payout-item"><em>No participants assigned yet.</em></div>`;
+        return;
+    }
+
     const earnings = {};
     winners.forEach((name, i) => {
         if (!name) return;
-        earnings[name] = (earnings[name] || 0) + PAYOUT_VALS[PAYOUT_KEYS[i]];
+        earnings[name] = (earnings[name] || 0) + (PAYOUT_VALS[PAYOUT_KEYS[i]] ?? 0);
     });
-
-    const container = document.getElementById('payout-list');
-    if (!container) return;
 
     const sortedList = [...allParticipants].sort((a, b) => {
         const earnA = earnings[a.name] || 0;

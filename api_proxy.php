@@ -40,7 +40,17 @@ foreach ($game['participants'] as $p) {
     ];
 }
 
-$squaresData = json_decode(file_get_contents($match['squares_file']), true);
+$squaresPath = $match['squares_file'];
+if (file_exists($squaresPath)) {
+    $squaresData = json_decode(file_get_contents($squaresPath), true);
+} else {
+    // Fallback if the file hasn't been created or is missing
+    $squaresData = [
+        'game_id' => '',
+        'participants' => [],
+        'grid' => []
+    ];
+}
 
 // Unified Output
 echo json_encode([
