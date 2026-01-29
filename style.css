@@ -202,7 +202,7 @@ body {
     display: flex;
     align-items: flex-start;
     background: var(--header-bg);
-    border-radius: 8px;
+    /* border-radius: 8px; */
     overflow: hidden; /* Clips the inner scroll shadow */
 }
 
