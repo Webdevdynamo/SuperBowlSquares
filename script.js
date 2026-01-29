@@ -1,23 +1,22 @@
 const logoBase = "https://ff.spindleco.com/sbs/images/logos/";
 const PAYOUTS = { q1: 25, q2: 25, q3: 25, final: 50 };
 let squareOwners = {}; 
+let allParticipants = []; // Store participants from JSON globaly
 
 async function init() {
     try {
         const response = await fetch('squares.json');
         const data = await response.json();
         squareOwners = data.grid; 
+        allParticipants = data.participants; // Save the full list
 
         const gridElement = document.getElementById('squares-grid');
         gridElement.innerHTML = ''; 
 
-        // 1. Create Top-Left Corner
+        // 1. Create Headers and Grid
         createSquare('', 'label', gridElement);
-
-        // 2. Create Header Row (Away Digits)
         for (let i = 0; i < 10; i++) createSquare(i, 'label', gridElement);
 
-        // 3. Create Grid Body (Home Label + 10 Squares per row)
         for (let h = 0; h < 10; h++) {
             createSquare(h, 'label', gridElement); 
             for (let a = 0; a < 10; a++) {
@@ -30,7 +29,7 @@ async function init() {
         }
 
         updateScore();
-        setInterval(updateScore, 60000); // Update every minute
+        setInterval(updateScore, 60000);
     } catch (err) {
         console.error("Initialization failed:", err);
     }
@@ -110,21 +109,41 @@ async function updateScore() {
 }
 
 function updatePayoutLeaderboard(winners) {
-    const playerWins = {};
+    const earnings = {};
     const keys = ['q1', 'q2', 'q3', 'final'];
+    
+    // Calculate who won which quarter
     winners.forEach((name, i) => {
         if (!name) return;
-        playerWins[name] = (playerWins[name] || 0) + PAYOUTS[keys[i]];
+        earnings[name] = (earnings[name] || 0) + PAYOUTS[keys[i]];
     });
 
-    document.getElementById('payout-list').innerHTML = Object.entries(playerWins)
-        .sort((a,b) => b[1] - a[1])
-        .map(([name, total]) => `
-            <div class="payout-item">
-                <span>${name}</span>
-                <span class="payout-amount">$${total}</span>
+    // Generate the combined list
+    const container = document.getElementById('payout-list');
+    
+    // Sort by earnings first, then by square count
+    const sortedList = [...allParticipants].sort((a, b) => {
+        const earnA = earnings[a.name] || 0;
+        const earnB = earnings[b.name] || 0;
+        return earnB - earnA || b.count - a.count;
+    });
+
+    container.innerHTML = sortedList.map(p => {
+        const currentEarnings = earnings[p.name] || 0;
+        const earningClass = currentEarnings > 0 ? 'has-earnings' : '';
+        
+        return `
+            <div class="participant-row ${earningClass}">
+                <div class="p-info">
+                    <span class="p-name">${p.name}</span>
+                    <span class="p-count">${p.count} Squares</span>
+                </div>
+                <div class="p-payout">
+                    ${currentEarnings > 0 ? `$${currentEarnings}` : '--'}
+                </div>
             </div>
-        `).join('');
+        `;
+    }).join('');
 }
 
 function stringToColor(str) {
