@@ -51,19 +51,20 @@ async function updateScore() {
         const res = await fetch(`api_proxy.php?id=${currentMatchId}`);
         const data = await res.json();
         
-        // Update Title and Payout Constants from the Match Config
-        document.getElementById('match-title').innerText = data.settings.title;
-        PAYOUTS = data.settings.payouts;
+        // 1. Check if settings exist before trying to access the title
+        if (data.settings && data.settings.title) {
+            document.getElementById('match-title').innerText = data.settings.title;
+            PAYOUTS = data.settings.payouts;
+        }
+
+        // 2. Map the rest of the data
         allParticipants = data.squares.participants;
         squareOwners = data.squares.grid;
 
-        const away = data.teams.find(t => t.homeAway === "Away");
-        const home = data.teams.find(t => t.homeAway === "Home");
-
-        // ... rest of your existing logic to update labels, box score, and grid ...
-        // Ensure you call updatePayoutLeaderboard(winners) at the end
-        
-    } catch (err) { console.error("Update failed", err); }
+        // ... continue with team and grid logic
+    } catch (err) {
+        console.error("Update failed:", err);
+    }
 }
 
 function updatePayoutLeaderboard(winners) {
