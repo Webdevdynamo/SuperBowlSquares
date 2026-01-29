@@ -152,40 +152,62 @@ function updateBoxScore(away, home) {
 /**
  * Handles Real-Time Grid Highlighting and Payout Calculation
  */
-function updateWinnersAndPayouts(away, home) {
+function updateWinnersAndPayouts(away, home, status) {
     const winners = [];
-
+    
     // 1. Reset current grid visual state
     document.querySelectorAll('.square').forEach(s => {
         s.classList.remove('active-winner', 'past-winner');
         const badge = s.querySelector('.q-badge');
         if (badge) badge.remove();
-        // Restore name text from attribute
-        s.innerText = s.getAttribute('data-owner'); 
+        s.innerText = s.getAttribute('data-owner') || ''; 
     });
 
-    // 2. Loop through 4 Quarters to find winners
-    for (let i = 0; i < 4; i++) {
-        const aDigit = away.quarters[i] % 10;
-        const hDigit = home.quarters[i] % 10;
-        const winnerName = squareOwners[`${aDigit}-${hDigit}`];
-        winners.push(winnerName);
+    // 2. Logic to determine if we should show winners
+    // We check if the game is beyond the "Scheduled" state
+    const isGameStarted = (status !== "Scheduled" && status !== "Pre-Game");
 
-        const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
-        if (el) {
-            // Apply visual classes (Q4/Final is Active, Others are Past)
-            el.classList.add(i === 3 ? 'active-winner' : 'past-winner');
+    // 3. Loop through 4 Quarters
+    for (let i = 0; i < 4; i++) {
+        const awayQScore = away.quarters[i];
+        const homeQScore = home.quarters[i];
+        
+        // We only process a quarter if the game has started 
+        // AND this specific quarter has been reached/played
+        const hasQuarterStarted = (awayQScore > 0 || homeQScore > 0 || i < getCurrentQuarterIndex(away, home));
+
+        if (isGameStarted) {
+            const aDigit = awayQScore % 10;
+            const hDigit = homeQScore % 10;
+            const winnerName = squareOwners[`${aDigit}-${hDigit}`];
             
-            // Add Quarter Badge
-            const badge = document.createElement('span');
-            badge.className = 'q-badge';
-            badge.innerText = `Q${i+1}`;
-            el.appendChild(badge);
+            // Only push to winners and draw on grid if there's been play in this quarter
+            // or if it's the very first quarter and the game is live
+            if (i === 0 || (awayQScore !== away.quarters[i-1] || homeQScore !== home.quarters[i-1])) {
+                 winners.push(winnerName);
+
+                 const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
+                 if (el) {
+                    // Only mark Q4 as "Active" if it's actually the end of the game or Q4 is live
+                    const isFinalQuarter = (i === 3);
+                    el.classList.add(isFinalQuarter ? 'active-winner' : 'past-winner');
+                    
+                    const badge = document.createElement('span');
+                    badge.className = 'q-badge';
+                    badge.innerText = `Q${i+1}`;
+                    el.appendChild(badge);
+                 }
+            }
         }
     }
 
-    // 3. Update Sidebar Leaderboard
     renderPayoutLeaderboard(winners);
+}
+
+function getCurrentQuarterIndex(away, home) {
+    // Basic logic: if total > sum of first 3 quarters, we are in Q4
+    // For simplicity, we can pass the "currentPlayingPeriod" from the API if needed
+    return 0; 
 }
 
 /**
