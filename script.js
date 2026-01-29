@@ -163,40 +163,45 @@ function updateWinnersAndPayouts(away, home, status) {
         s.innerText = s.getAttribute('data-owner') || ''; 
     });
 
-    // 2. Logic to determine if we should show winners
-    // We check if the game is beyond the "Scheduled" state
+    // 2. Define the game state
     const isGameStarted = (status !== "Scheduled" && status !== "Pre-Game");
+    const isGameOver = (status === "Final" || status === "Completed");
 
     // 3. Loop through 4 Quarters
     for (let i = 0; i < 4; i++) {
         const awayQScore = away.quarters[i];
         const homeQScore = home.quarters[i];
-        
-        // We only process a quarter if the game has started 
-        // AND this specific quarter has been reached/played
-        const hasQuarterStarted = (awayQScore > 0 || homeQScore > 0 || i < getCurrentQuarterIndex(away, home));
+        const combinedScore = awayQScore + homeQScore;
 
-        if (isGameStarted) {
+        // LOGIC: A quarter only has a "winner" if:
+        // A) The combined score for that quarter is > 0
+        // B) OR the game is completely over (handles 0-0 Final ties, though rare)
+        if (isGameStarted && (combinedScore > 0 || isGameOver)) {
+            
             const aDigit = awayQScore % 10;
             const hDigit = homeQScore % 10;
             const winnerName = squareOwners[`${aDigit}-${hDigit}`];
             
-            // Only push to winners and draw on grid if there's been play in this quarter
-            // or if it's the very first quarter and the game is live
-            if (i === 0 || (awayQScore !== away.quarters[i-1] || homeQScore !== home.quarters[i-1])) {
-                 winners.push(winnerName);
+            // Only add the marker if this is the CURRENT quarter being played
+            // or if it's a finished quarter.
+            // We determine "Current Quarter" by finding the highest 'i' where a score exists.
+            const latestQuarterWithScore = away.quarters.findLastIndex(q => q > 0) || 0;
 
-                 const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
-                 if (el) {
-                    // Only mark Q4 as "Active" if it's actually the end of the game or Q4 is live
-                    const isFinalQuarter = (i === 3);
-                    el.classList.add(isFinalQuarter ? 'active-winner' : 'past-winner');
+            if (i <= latestQuarterWithScore || isGameOver) {
+                winners.push(winnerName);
+
+                const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
+                if (el) {
+                    // Mark as Active if it's the latest quarter or Final. 
+                    // Otherwise mark as Past.
+                    const isLatest = (i === latestQuarterWithScore) || isGameOver;
+                    el.classList.add(isLatest ? 'active-winner' : 'past-winner');
                     
                     const badge = document.createElement('span');
                     badge.className = 'q-badge';
-                    badge.innerText = `Q${i+1}`;
+                    badge.innerText = (i === 3) ? 'F' : `Q${i+1}`;
                     el.appendChild(badge);
-                 }
+                }
             }
         }
     }
