@@ -10,14 +10,19 @@ $json = file_get_contents($msnUrl);
 $data = json_decode($json, true);
 
 // Navigate the MSN nesting: value[0] -> games[0] -> participants
+// $game = $data['value'][0]['games'][0];
+// $participants = $game['participants'];
+
+// $output = [
+//     'gameStatus' => $game['gameState']['detailedGameStatus'], // e.g., "Final" or "In-Progress"
+//     'clock' => $game['gameState']['gameClock'],
+//     'teams' => []
+// ];
+
 $game = $data['value'][0]['games'][0];
 $participants = $game['participants'];
 
-$output = [
-    'gameStatus' => $game['gameState']['detailedGameStatus'], // e.g., "Final" or "In-Progress"
-    'clock' => $game['gameState']['gameClock'],
-    'teams' => []
-];
+$output = ['teams' => []];
 
 foreach ($participants as $p) {
     $output['teams'][] = [
