@@ -22,11 +22,16 @@ function renderStaticGrid() {
     if (!gridElement) return;
     gridElement.innerHTML = ''; 
 
-    createSquare('', 'label', gridElement);
+    // 1. Create the Top Header Row within the grid (Digits 0-9)
+    // We add one empty spacer first to align with the vertical labels
+    createSquare('', 'label', gridElement); 
     for (let i = 0; i < 10; i++) createSquare(i, 'label', gridElement);
 
+    // 2. Create the Grid Rows
     for (let h = 0; h < 10; h++) {
+        // This is the digit label (0-9) that sits inside the scroll area
         createSquare(h, 'label', gridElement); 
+
         for (let a = 0; a < 10; a++) {
             const name = squareOwners[`${a}-${h}`] || '';
             const sq = createSquare(name, 'square', gridElement);
