@@ -45,7 +45,6 @@
             <aside class="sidebar">
                 <h3>Participants</h3>
                 <div id="participant-list"></div>
-                <div id="payout-list"></div>
             </aside>
         </div>
     </div>
