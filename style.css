@@ -1,0 +1,49 @@
+:root {
+    --bg-color: #f4f4f9;
+    --grid-border: #ccc;
+    --header-bg: #2c3e50;
+    --winner-gold: #f1c40f;
+}
+
+body { font-family: sans-serif; background: var(--bg-color); margin: 0; padding: 20px; }
+
+.main-layout { display: flex; gap: 30px; justify-content: center; }
+
+/* Grid Styling */
+#squares-grid {
+    display: grid;
+    grid-template-columns: 40px repeat(10, 1fr);
+    gap: 2px;
+    background: var(--grid-border);
+    border: 2px solid var(--grid-border);
+}
+
+.square {
+    width: 60px; height: 60px;
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; text-align: center; overflow: hidden;
+}
+
+.label { background: var(--header-bg); color: white; font-weight: bold; }
+
+/* Winner Animation */
+.active-winner {
+    background-color: var(--winner-gold) !important;
+    font-weight: bold;
+    border: 2px solid #000;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); box-shadow: 0 0 15px var(--winner-gold); }
+    100% { transform: scale(1); }
+}
+
+/* Sidebar & Labels */
+.sidebar { width: 200px; background: white; padding: 15px; border-radius: 8px; height: fit-content; }
+.participant-item { margin-bottom: 5px; font-size: 0.9rem; }
+.axis-label { text-align: center; font-weight: bold; padding: 10px; }
+.left-label { writing-mode: vertical-rl; transform: rotate(180deg); }
+.grid-flex { display: flex; align-items: center; }

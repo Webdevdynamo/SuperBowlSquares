@@ -1,0 +1,25 @@
+{
+  "game_id": "SportRadar_Football_NFL_2025_Game_5848514c-3977-4aa3-9db0-94ed5d0ebb34",
+  "participants": [
+    { "name": "Alice Smith", "count": 4 },
+    { "name": "Bob Johnson", "count": 3 },
+    { "name": "Charlie Brown", "count": 2 },
+    { "name": "Dana White", "count": 3 },
+    { "name": "Eli Manning", "count": 1 }
+  ],
+  "grid": {
+    "0-0": "Alice Smith",
+    "3-0": "Bob Johnson",
+    "7-0": "Alice Smith",
+    "0-7": "Charlie Brown",
+    "3-7": "Dana White",
+    "7-7": "Eli Manning",
+    "4-1": "Alice Smith",
+    "0-3": "Bob Johnson",
+    "1-4": "Charlie Brown",
+    "8-2": "Dana White",
+    "9-9": "Alice Smith",
+    "2-8": "Bob Johnson",
+    "6-3": "Dana White"
+  }
+}
