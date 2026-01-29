@@ -1,39 +1,40 @@
-const logoBase = "https://ff.spindleco.com/sbs/images/logos/";
-let squareOwners = {}; 
-let allParticipants = []; // Store participants from JSON globaly
-
-// Get Match ID from URL
 const urlParams = new URLSearchParams(window.location.search);
 const currentMatchId = urlParams.get('id') || 'match_01';
+const logoBase = "https://ff.spindleco.com/sbs/images/logos/";
 
-let matchSettings = {};
+let PAYOUTS = {}; 
+let squareOwners = {};
+let allParticipants = [];
 
 async function init() {
-    // 1. Fetch everything for this specific match via the proxy
-    const response = await fetch(`api_proxy.php?id=${currentMatchId}`);
-    const data = await response.json();
-
-    matchSettings = data.matchInfo; 
-    squareOwners = data.squares.grid;
-    allParticipants = data.squares.participants;
-
-    // Update Page Title and Cost Info
-    document.querySelector('h1').innerText = matchSettings.title;
+    // Initial fetch to set up the grid
+    await updateScore(); 
     
-    // 2. Render Grid (Using existing createSquare logic)
-    renderGrid(); 
-    
-    // 3. Initial Score Update
-    updateUI(data.gameData);
+    // Set up the grid once we have the square owners
+    renderStaticGrid();
 
-    // 4. Start Polling
-    setInterval(refreshMatchData, 60000);
+    // Start Polling for live score updates
+    setInterval(updateScore, 60000);
 }
 
-async function refreshMatchData() {
-    const res = await fetch(`api_proxy.php?id=${currentMatchId}`);
-    const data = await res.json();
-    updateUI(data.gameData);
+function renderStaticGrid() {
+    const gridElement = document.getElementById('squares-grid');
+    if (!gridElement) return;
+    gridElement.innerHTML = ''; 
+
+    createSquare('', 'label', gridElement);
+    for (let i = 0; i < 10; i++) createSquare(i, 'label', gridElement);
+
+    for (let h = 0; h < 10; h++) {
+        createSquare(h, 'label', gridElement); 
+        for (let a = 0; a < 10; a++) {
+            const name = squareOwners[`${a}-${h}`] || '';
+            const sq = createSquare(name, 'square', gridElement);
+            sq.id = `sq-${a}-${h}`;
+            sq.setAttribute('data-owner', name); 
+            if (name) sq.style.backgroundColor = stringToColor(name);
+        }
+    }
 }
 
 function createSquare(text, className, container) {
@@ -44,64 +45,105 @@ function createSquare(text, className, container) {
     return div;
 }
 
-let PAYOUTS = {}; 
-
 async function updateScore() {
     try {
         const res = await fetch(`api_proxy.php?id=${currentMatchId}`);
         const data = await res.json();
         
-        // 1. Check if settings exist before trying to access the title
-        if (data.settings && data.settings.title) {
-            document.getElementById('match-title').innerText = data.settings.title;
+        if (data.error) {
+            console.error(data.error);
+            return;
+        }
+
+        // Set Match Title and Payouts
+        if (data.settings) {
+            const titleEl = document.getElementById('match-title');
+            if (titleEl) titleEl.innerText = data.settings.title;
             PAYOUTS = data.settings.payouts;
         }
 
-        // 2. Map the rest of the data
-        allParticipants = data.squares.participants;
         squareOwners = data.squares.grid;
+        allParticipants = data.squares.participants;
 
-        // ... continue with team and grid logic
+        const away = data.teams.find(t => t.homeAway === "Away");
+        const home = data.teams.find(t => t.homeAway === "Home");
+
+        if (!away || !home) return;
+
+        // Update Axis Labels
+        document.querySelector('.top-label').innerHTML = `
+            <img src="${logoBase}${encodeURIComponent(away.fullName)} Logo.png" class="axis-logo">
+            <div class="label-text">${away.fullName.toUpperCase()}</div>`;
+        
+        document.querySelector('.left-label').innerHTML = `
+            <img src="${logoBase}${encodeURIComponent(home.fullName)} Logo.png" class="axis-logo">
+            <div class="label-text"><span>${home.fullName.toUpperCase()}</span></div>`;
+
+        // Update Box Score
+        const tbody = document.getElementById('box-score-body');
+        if (tbody) {
+            tbody.innerHTML = [away, home].map(t => `
+                <tr>
+                    <td class="team-cell"><img src="${logoBase}${encodeURIComponent(t.fullName)} Logo.png" class="tiny-logo"> ${t.shortName}</td>
+                    <td>${t.quarters[0]}</td><td>${t.quarters[1]}</td><td>${t.quarters[2]}</td><td>${t.quarters[3]}</td>
+                    <td class="final-col"><strong>${t.total}</strong></td>
+                </tr>
+            `).join('');
+        }
+
+        // Update Winners
+        const winners = [];
+        document.querySelectorAll('.square').forEach(s => {
+            s.classList.remove('active-winner', 'past-winner');
+            s.innerText = s.getAttribute('data-owner'); 
+        });
+
+        for (let i = 0; i < 4; i++) {
+            const aDigit = away.quarters[i] % 10;
+            const hDigit = home.quarters[i] % 10;
+            const winnerName = squareOwners[`${aDigit}-${hDigit}`];
+            winners.push(winnerName);
+
+            const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
+            if (el) {
+                el.classList.add(i === 3 ? 'active-winner' : 'past-winner');
+                const badge = document.createElement('span');
+                badge.className = 'q-badge';
+                badge.innerText = `Q${i+1}`;
+                el.appendChild(badge);
+            }
+        }
+
+        updatePayoutLeaderboard(winners);
+
     } catch (err) {
-        console.error("Update failed:", err);
+        console.error("Fetch error:", err);
     }
 }
 
 function updatePayoutLeaderboard(winners) {
     const earnings = {};
     const keys = ['q1', 'q2', 'q3', 'final'];
-    
-    // Calculate who won which quarter
     winners.forEach((name, i) => {
         if (!name) return;
         earnings[name] = (earnings[name] || 0) + PAYOUTS[keys[i]];
     });
 
-    // Generate the combined list
     const container = document.getElementById('payout-list');
-    
-    // Sort by earnings first, then by square count
-    const sortedList = [...allParticipants].sort((a, b) => {
-        const earnA = earnings[a.name] || 0;
-        const earnB = earnings[b.name] || 0;
-        return earnB - earnA || b.count - a.count;
-    });
+    if (!container) return;
+
+    const sortedList = [...allParticipants].sort((a, b) => (earnings[b.name] || 0) - (earnings[a.name] || 0));
 
     container.innerHTML = sortedList.map(p => {
         const currentEarnings = earnings[p.name] || 0;
-        const earningClass = currentEarnings > 0 ? 'has-earnings' : '';
-        
         return `
-            <div class="participant-row ${earningClass}">
+            <div class="participant-row ${currentEarnings > 0 ? 'has-earnings' : ''}">
                 <div class="p-info">
                     <span class="p-name">${p.name}</span>
                     <span class="p-count">${p.count} Squares</span>
                 </div>
-                <div class="p-payout">
-                    ${currentEarnings > 0 ? `$${currentEarnings}` : '--'}
-                </div>
-            </div>
-        `;
+                <div class="p-payout">${currentEarnings > 0 ? `$${currentEarnings}` : '--'}</div>
+            </div>`;
     }).join('');
 }
 
