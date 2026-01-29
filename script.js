@@ -44,33 +44,43 @@ async function updateScore() {
         const res = await fetch('api_proxy.php');
         const game = await res.json();
 
+        // Find teams - we use the flattened 'teams' array from your api_proxy.php
         const away = game.teams.find(t => t.homeAway === "Away");
         const home = game.teams.find(t => t.homeAway === "Home");
 
-        // Update Text Scores
+        // The URL base for your logos
+        const logoBase = "https://ff.spindleco.com/sbs/images/logos/";
+
+        // 1. Update Scoreboard with Full Names + Logos
         document.getElementById('box-score').innerHTML = `
             <div class="score-row">
-                <img src="./images/logos/${away.name} Logo.png" class="team-logo-small">
-                <span>${away.score} - ${home.score}</span>
-                <img src="./images/logos/${home.name} Logo.png" class="team-logo-small">
+                <div class="team-meta">
+                    <img src="${logoBase}${away.fullName} Logo.png" class="team-logo-small" onerror="this.src='images/default.png'">
+                    <span class="team-name-mobile">${away.name}</span>
+                </div>
+                <div class="score-digits">${away.score} - ${home.score}</div>
+                <div class="team-meta">
+                    <img src="${logoBase}${home.fullName} Logo.png" class="team-logo-small" onerror="this.src='images/default.png'">
+                    <span class="team-name-mobile">${home.name}</span>
+                </div>
             </div>
         `;
 
-        // Update Grid Axis Labels with Logos
+        // 2. Update Grid Axis Labels
         const topLabel = document.querySelector('.top-label');
         const leftLabel = document.querySelector('.left-label');
 
         topLabel.innerHTML = `
-            <img src="./images/logos/${away.name} Logo.png" class="axis-logo">
-            <span>${away.name.toUpperCase()}</span>
+            <img src="${logoBase}${away.fullName} Logo.png" class="axis-logo">
+            <div class="label-text">${away.fullName.toUpperCase()}</div>
         `;
 
         leftLabel.innerHTML = `
-            <img src="./images/logos/${home.name} Logo.png" class="axis-logo">
-            <span>${home.name.toUpperCase()}</span>
+            <img src="${logoBase}${home.fullName} Logo.png" class="axis-logo">
+            <div class="label-text"><span>${home.fullName.toUpperCase()}</span></div>
         `;
 
-        // Highlight winning square
+        // 3. Highlight winning square
         document.querySelectorAll('.square').forEach(s => s.classList.remove('active-winner'));
         const winnerId = `sq-${away.lastDigit}-${home.lastDigit}`;
         const winnerSquare = document.getElementById(winnerId);
