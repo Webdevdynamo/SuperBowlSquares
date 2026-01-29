@@ -26,11 +26,11 @@ $output = ['teams' => []];
 
 foreach ($participants as $p) {
     $output['teams'][] = [
-        'name' => $p['team']['shortName']['rawName'],
-        'score' => (int)$p['result']['score'],
+        'shortName' => $p['team']['shortName']['rawName'], // "Patriots"
+        'fullName'  => $p['team']['name']['rawName'],      // "New England Patriots"
+        'score'     => (int)$p['result']['score'],
         'lastDigit' => (int)$p['result']['score'] % 10,
-        'color' => "#" . $p['team']['colors']['primaryColorHex'],
-        'homeAway' => $p['homeAwayStatus'] // "Home" or "Away"
+        'homeAway'  => $p['homeAwayStatus']
     ];
 }
 
