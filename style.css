@@ -80,6 +80,7 @@ body {
     word-break: break-word;
     /* padding: 4px; */
     line-height: 1.1;
+    transition: none !important;
 }
 
 .label { background: #222; color: #fff; font-weight: bold; }
@@ -94,6 +95,8 @@ body {
     padding: 1px 3px;
     border-radius: 0 0 0 4px;
     font-weight: bold;
+    pointer-events: none;
+    z-index: 10;
 }
 
 .active-winner {

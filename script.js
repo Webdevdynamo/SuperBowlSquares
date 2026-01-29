@@ -55,74 +55,53 @@ async function updateScore() {
         const res = await fetch(`api_proxy.php?id=${currentMatchId}`);
         const data = await res.json();
         
-        if (data.error) {
-            console.error(data.error);
-            return;
-        }
+        if (data.error) return;
 
-        // Set Match Title and Payouts
-        if (data.settings) {
-            const titleEl = document.getElementById('match-title');
-            if (titleEl) titleEl.innerText = data.settings.title;
-            PAYOUTS = data.settings.payouts;
-        }
-
+        // Immediately update global data
+        PAYOUTS = data.settings.payouts;
         squareOwners = data.squares.grid;
         allParticipants = data.squares.participants;
 
         const away = data.teams.find(t => t.homeAway === "Away");
         const home = data.teams.find(t => t.homeAway === "Home");
 
-        if (!away || !home) return;
-
-        // Update Axis Labels
-        document.querySelector('.top-label').innerHTML = `
-            <img src="${logoBase}${encodeURIComponent(away.fullName)} Logo.png" class="axis-logo">
-            <div class="label-text">${away.fullName.toUpperCase()}</div>`;
-        
-        document.querySelector('.left-label').innerHTML = `
-            <img src="${logoBase}${encodeURIComponent(home.fullName)} Logo.png" class="axis-logo">
-            <div class="label-text"><span>${home.fullName.toUpperCase()}</span></div>`;
-
-        // Update Box Score
-        const tbody = document.getElementById('box-score-body');
-        if (tbody) {
-            tbody.innerHTML = [away, home].map(t => `
-                <tr>
-                    <td class="team-cell"><img src="${logoBase}${encodeURIComponent(t.fullName)} Logo.png" class="tiny-logo"> ${t.shortName}</td>
-                    <td>${t.quarters[0]}</td><td>${t.quarters[1]}</td><td>${t.quarters[2]}</td><td>${t.quarters[3]}</td>
-                    <td class="final-col"><strong>${t.total}</strong></td>
-                </tr>
-            `).join('');
-        }
-
-        // Update Winners
-        const winners = [];
-        document.querySelectorAll('.square').forEach(s => {
-            s.classList.remove('active-winner', 'past-winner');
-            s.innerText = s.getAttribute('data-owner'); 
+        // UI Updates wrapped in requestAnimationFrame for "Real-Time" feel
+        window.requestAnimationFrame(() => {
+            renderHeaderAndTable(data, away, home);
+            renderWinnerMarkers(away, home);
+            updatePayoutLeaderboard(calculateWinners(away, home));
         });
 
-        for (let i = 0; i < 4; i++) {
-            const aDigit = away.quarters[i] % 10;
-            const hDigit = home.quarters[i] % 10;
-            const winnerName = squareOwners[`${aDigit}-${hDigit}`];
-            winners.push(winnerName);
-
-            const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
-            if (el) {
-                el.classList.add(i === 3 ? 'active-winner' : 'past-winner');
-                const badge = document.createElement('span');
-                badge.className = 'q-badge';
-                badge.innerText = `Q${i+1}`;
-                el.appendChild(badge);
-            }
-        }
-
-        updatePayoutLeaderboard(winners);
-
     } catch (err) {
-        console.error("Fetch error:", err);
+        console.error("Update failed", err);
+    }
+}
+
+function renderWinnerMarkers(away, home) {
+    // 1. Clean slate for all squares
+    const allSquares = document.querySelectorAll('.square');
+    allSquares.forEach(s => {
+        s.classList.remove('active-winner', 'past-winner');
+        // Remove existing badges to prevent duplicates
+        const oldBadge = s.querySelector('.q-badge');
+        if (oldBadge) oldBadge.remove();
+    });
+
+    // 2. Apply markers for all 4 quarters
+    for (let i = 0; i < 4; i++) {
+        const aDigit = away.quarters[i] % 10;
+        const hDigit = home.quarters[i] % 10;
+        const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
+
+        if (el) {
+            const isCurrent = (i === 3); // Q4/Final is active
+            el.classList.add(isCurrent ? 'active-winner' : 'past-winner');
+            
+            const badge = document.createElement('span');
+            badge.className = 'q-badge';
+            badge.innerText = `Q${i+1}`;
+            el.appendChild(badge);
+        }
     }
 }
 
