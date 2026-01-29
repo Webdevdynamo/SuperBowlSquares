@@ -36,16 +36,16 @@ var game = {};
 	game.loadGame = function(type){
 		game.season_type = type;
 		$.when(
-			$.getJSON( "/includes/scores.php?ran="+getRandomInt(10000,99999)+"type="+game.season_type, function( data ) {
+			$.getJSON( "./includes/scores.php?ran="+getRandomInt(10000,99999)+"type="+game.season_type, function( data ) {
 				game.scores = data;
 				game.og_time = game.scores.time;
 				//game.scores.time = game.og_time = Date.now() + 1000;
 			}),
-			$.getJSON( "/includes/players.php", function( data ) {
+			$.getJSON( "./includes/players.php", function( data ) {
 				//console.log("Players");
 				game.players = data;
 			}),
-			$.getJSON( "/includes/colors.php", function( data ) {
+			$.getJSON( "./includes/colors.php", function( data ) {
 				//console.log("Colors");
 				//console.log(data);
 				game.colors = data;
