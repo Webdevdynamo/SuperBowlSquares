@@ -10,26 +10,33 @@ $json = file_get_contents($msnUrl);
 $data = json_decode($json, true);
 
 // Navigate the MSN nesting: value[0] -> games[0] -> participants
-// $game = $data['value'][0]['games'][0];
-// $participants = $game['participants'];
-
-// $output = [
-//     'gameStatus' => $game['gameState']['detailedGameStatus'], // e.g., "Final" or "In-Progress"
-//     'clock' => $game['gameState']['gameClock'],
-//     'teams' => []
-// ];
 
 $game = $data['value'][0]['games'][0];
 $participants = $game['participants'];
 
-$output = ['teams' => []];
+$output = [
+    'status' => $game['gameState']['detailedGameStatus'],
+    'teams' => []
+];
 
 foreach ($participants as $p) {
+    $qScores = [0, 0, 0, 0]; // Default Q1, Q2, Q3, Q4
+    $runningTotal = 0;
+    
+    // MSN provides scores per period; we must sum them for the score AT THE END of that quarter
+    foreach ($p['playingPeriodScores'] as $period) {
+        $num = (int)$period['playingPeriod']['number'];
+        if ($num <= 4) {
+            $runningTotal += (int)$period['score'];
+            $qScores[$num - 1] = $runningTotal;
+        }
+    }
+
     $output['teams'][] = [
-        'shortName' => $p['team']['shortName']['rawName'], // "Patriots"
-        'fullName'  => $p['team']['name']['rawName'],      // "New England Patriots"
-        'score'     => (int)$p['result']['score'],
-        'lastDigit' => (int)$p['result']['score'] % 10,
+        'fullName'  => $p['team']['name']['rawName'],
+        'shortName' => $p['team']['shortName']['rawName'],
+        'total'     => (int)$p['result']['score'],
+        'quarters'  => $qScores, // [Q1Total, Q2Total, Q3Total, Q4Total]
         'homeAway'  => $p['homeAwayStatus']
     ];
 }

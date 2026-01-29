@@ -13,8 +13,20 @@
         <header class="main-header">
             <h1>🏈 Football Squares</h1>
             <div id="box-score-container">
-                <div id="box-score">Connecting...</div>
-                <div id="game-status">--</div>
+                <table class="box-score-table">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4/F</th>
+                            <th class="final-col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="box-score-body">
+                        </tbody>
+                </table>
             </div>
         </header>
 
