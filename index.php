@@ -81,7 +81,7 @@ else:
                         <h2><?= $match['title'] ?></h2>
                         <div class="match-meta" style="color:#888; font-size: 0.9rem;">
                             $<?= $match['cost_per_square'] ?> / square | 
-                            Prize: $<?= array_sum($match['payouts']) ?>
+                            Prize Pool: $<?= array_sum($match['payouts']) ?>
                         </div>
                     </div>
                     <div class="enter-btn">View Board</div>
