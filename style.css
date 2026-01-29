@@ -1,49 +1,100 @@
 :root {
-    --bg-color: #f4f4f9;
-    --grid-border: #ccc;
-    --header-bg: #2c3e50;
+    --bg-color: #1a1a1d;
+    --card-bg: #ffffff;
+    --header-bg: #4e4e50;
+    --text-main: #333;
     --winner-gold: #f1c40f;
 }
 
-body { font-family: sans-serif; background: var(--bg-color); margin: 0; padding: 20px; }
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-color); 
+    margin: 0; 
+    padding: 10px;
+    color: var(--text-main);
+}
 
-.main-layout { display: flex; gap: 30px; justify-content: center; }
+/* Header & Scoreboard */
+.main-header {
+    text-align: center;
+    background: var(--header-bg);
+    color: white;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
 
-/* Grid Styling */
+#box-score { font-size: 1.5rem; font-weight: bold; margin: 5px 0; }
+
+/* Layout Logic */
+.content-wrapper {
+    display: flex;
+    flex-direction: column; /* Stack vertically on mobile */
+    gap: 20px;
+}
+
+/* Grid & Scrolling */
+.scroll-container {
+    overflow-x: auto; /* Enable horizontal swipe */
+    -webkit-overflow-scrolling: touch;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.grid-flex { display: flex; align-items: flex-start; width: max-content; }
+
 #squares-grid {
     display: grid;
-    grid-template-columns: 40px repeat(10, 1fr);
-    gap: 2px;
-    background: var(--grid-border);
-    border: 2px solid var(--grid-border);
+    grid-template-columns: 35px repeat(10, 50px); /* Fixed width squares for readability */
+    gap: 1px;
+    background: #ccc;
 }
 
 .square {
-    width: 60px; height: 60px;
+    width: 50px; height: 50px;
     background: white;
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.7rem; text-align: center; overflow: hidden;
+    font-size: 0.65rem; text-align: center;
 }
 
-.label { background: var(--header-bg); color: white; font-weight: bold; }
+.label { background: #333; color: white; font-weight: bold; width: 35px; }
+.top-label-row { height: 35px; }
 
-/* Winner Animation */
+/* Responsive Sidebar */
+.sidebar {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+#participant-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Grid of names */
+    gap: 10px;
+}
+
+.mobile-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 8px;
+}
+
+/* Desktop Styles */
+@media (min-width: 900px) {
+    .content-wrapper { flex-direction: row; align-items: flex-start; }
+    .sidebar { width: 300px; }
+    .mobile-hint { display: none; }
+    #participant-list { grid-template-columns: 1fr; }
+}
+
+/* Active Winner Animation */
 .active-winner {
     background-color: var(--winner-gold) !important;
-    font-weight: bold;
     border: 2px solid #000;
-    animation: pulse 1.5s infinite;
+    z-index: 10;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(241, 196, 15, 0.8);
 }
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); box-shadow: 0 0 15px var(--winner-gold); }
-    100% { transform: scale(1); }
-}
-
-/* Sidebar & Labels */
-.sidebar { width: 200px; background: white; padding: 15px; border-radius: 8px; height: fit-content; }
-.participant-item { margin-bottom: 5px; font-size: 0.9rem; }
-.axis-label { text-align: center; font-weight: bold; padding: 10px; }
-.left-label { writing-mode: vertical-rl; transform: rotate(180deg); }
-.grid-flex { display: flex; align-items: center; }
