@@ -1,0 +1,16 @@
+[07-Feb-2022 22:00:10 UTC] PHP Warning:  preg_match_all(): No ending delimiter '/' found in /home/ffdominic/public_html/includes/scores.php on line 345
+[07-Feb-2022 22:00:17 UTC] PHP Warning:  preg_match_all(): No ending delimiter '/' found in /home/ffdominic/public_html/includes/scores.php on line 345
+[07-Feb-2022 22:00:28 UTC] PHP Warning:  preg_match_all(): No ending delimiter '/' found in /home/ffdominic/public_html/includes/scores.php on line 345
+[07-Feb-2023 22:21:13 UTC] PHP Warning:  json_decode() expects parameter 1 to be string, array given in /home/ffdominic/public_html/includes/scores.php on line 147
+[07-Feb-2023 22:44:40 UTC] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/ffdominic/public_html/includes/scores.php on line 279
+[07-Feb-2023 22:44:41 UTC] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/ffdominic/public_html/includes/scores.php on line 279
+[07-Feb-2023 22:44:43 UTC] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/ffdominic/public_html/includes/scores.php on line 279
+[09-Feb-2023 16:17:01 UTC] PHP Warning:  file_get_contents(./scores.json): failed to open stream: No such file or directory in /home/ffdominic/public_html/includes/scores.php on line 94
+[09-Feb-2023 16:17:02 UTC] PHP Warning:  file_get_contents(./scores.json): failed to open stream: No such file or directory in /home/ffdominic/public_html/includes/scores.php on line 94
+[10-Feb-2023 19:25:33 UTC] PHP Warning:  date() expects parameter 2 to be integer, string given in /home/ffdominic/public_html/includes/scores.php on line 89
+[12-Feb-2023 11:21:25 UTC] PHP Warning:  date() expects parameter 2 to be integer, string given in /home/ffdominic/public_html/includes/scores.php on line 89
+[12-Feb-2023 11:21:47 UTC] PHP Warning:  date() expects parameter 2 to be integer, string given in /home/ffdominic/public_html/includes/scores.php on line 89
+[13-Feb-2023 07:17:09 UTC] PHP Warning:  date() expects parameter 2 to be integer, string given in /home/ffdominic/public_html/includes/scores.php on line 89
+[13-Feb-2023 07:17:31 UTC] PHP Warning:  date() expects parameter 2 to be integer, string given in /home/ffdominic/public_html/includes/scores.php on line 89
+[13-Feb-2023 11:43:11 UTC] PHP Warning:  date() expects parameter 2 to be integer, string given in /home/ffdominic/public_html/includes/scores.php on line 89
+[13-Feb-2023 15:18:28 UTC] PHP Warning:  date() expects parameter 2 to be integer, string given in /home/ffdominic/public_html/includes/scores.php on line 89

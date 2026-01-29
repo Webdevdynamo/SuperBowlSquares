@@ -1,0 +1,281 @@
+body{
+	margin: 0px;
+	padding: 0px;
+	font-family: "Arial","Tahoma";
+}
+#wrapper{
+	width: 100%;
+	height: 100%;
+}
+#master-table{
+	width: 100%;
+	height: 100%;
+}
+#top{
+	width: 100%;
+	height: 210px;
+	min-height: 150px;
+}
+#middle{
+	width: 100%;
+	height: 85%;
+	min-width:700px;
+	position: relative;
+}
+#player-list-holder{
+	/*width:25%;*/
+	height: 100%;
+	/*min-width:317px;*/
+	display:block;
+	float:left;
+	overflow: auto;
+	position: absolute;
+	/*background-color: #f9f9f9;*/
+	padding-left: 20px;
+}
+#board-holder{
+	width:75%;
+	min-width:500px;
+	height: 100%;
+	display:block;
+	float:right;
+}
+.square{
+	background-color: white;
+	border: 1px solid #000;
+	display: block;
+	float:left;
+	text-align:center;
+	font-weight: bold;
+}
+.score-square{
+	cursor: pointer;
+}
+#board{
+	width:100%;
+	display: block;
+	margin: auto;
+	/*border-bottom: 1px solid #000;
+	border-right: 1px solid #000;*/
+	position: relative;
+	margin-left: 180px;
+}
+#top-label{
+    display: block;
+    height: 50px;
+    clear: both;
+    /*margin-bottom: 15px;*/
+}
+#left-label{
+    display: block;
+    width: 50px;
+    clear: both;
+	position: absolute;
+    left: -50px;
+    writing-mode: vertical-rl;
+	text-align: center;
+    font-size: 41px;
+
+	-moz-transform: scale(-1, 1);
+	-webkit-transform: scale(-1, 1);
+	-o-transform: scale(-1, 1);
+	-ms-transform: scale(-1, 1);
+	transform: scale(-1, -1);
+	/*margin-left: -15px;*/
+}
+.label{
+	text-align: center;
+    font-size: 41px;
+    font-weight: bold;
+}
+.top-row{
+    border-top: 0px;
+}
+.left-row{
+    border-left: 0px;
+}
+.header{
+	font-size: 3vw;
+}
+.player-info{
+	float: left;
+	margin-right: 10px;
+}
+#player-list{
+	list-style: none;
+	clear: both;
+    padding: 0px;
+    margin: auto;
+    /*width: 300px;*/
+}
+
+#player-list li{
+	/*padding: 5px;*/
+    display: block;
+	clear: both;
+	position: relative;
+	margin-bottom: 10px;
+}
+#player-list li:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.player-game-score{
+	clear: both;
+}
+.player-special-points{
+	clear: both;
+}
+.player-secondary{
+	margin-left: 35px;
+	font-size: 12px;
+    line-height: 15px;
+}
+.player{
+	clear: both;
+	cursor: pointer;
+	line-height: 25px;
+}
+.player-swatch{
+	display: block;
+	width: 25px;
+	/*height: 25px;*/
+	
+	height: 100%;
+    position: absolute;
+}
+.player-name{
+	width: 125px;
+    text-align: left;
+	margin-left: 28px;
+	font-weight: bold;
+}
+.player-points{
+	width: 65px;
+    text-align: center;
+	font-weight: bold;
+}
+.active-player{
+	background-color: #e6e6e6;
+	border-radius: 5px;
+}
+#title{
+	/*width: 20%;*/
+	width: 100%;
+	display: block;
+    /*height: 100%;*/
+	/*float: left;*/
+}
+#game-scores{
+	/*width: 80%;
+    min-width: 500px;
+    height: 165px;
+	float: left;
+	overflow: auto;
+	padding-top: 45px;
+
+	-moz-box-shadow:    inset 0 0 10px #000000;
+   -webkit-box-shadow: inset 0 0 10px #000000;
+   box-shadow:         inset 0 0 10px #000000;
+   */
+	display: block;
+   position: relative;
+}
+.game-holder{
+	/*margin-bottom: 5px;*/
+}
+#game-container{
+	/*content: "";
+	display: table;
+	clear: both;
+	width: max-content;*/
+}
+.game-table{
+	/*margin-right: 10px;*/
+	margin: 20px auto;
+	border-collapse: collapse;
+	font-size: 30px;
+}
+
+.game-table td{
+	border: 1px solid #000;
+	/*padding: 3px;*/
+	text-align: center;
+}
+.quarter-score, .final-score{
+	width: 25px;
+	cursor: pointer;
+	width: 50px;
+}
+.game-column{
+	/*float: left;*/
+}
+.team-name{
+	width: 180px;
+	font-size: 20px;
+	height: 50px;
+}
+.winning-team{
+	font-weight: bold;
+}
+.week-label{
+	display: block;
+    writing-mode: vertical-rl;
+    text-align: center;
+    font-size: 14px;
+    -moz-transform: scale(-1, 1);
+    -webkit-transform: scale(-1, 1);
+    -o-transform: scale(-1, 1);
+    -ms-transform: scale(-1, 1);
+    transform: scale(-1, -1);
+    float: left;
+    background-color: #000;
+    color: #fff;
+	height: 139px;
+    /*width: 60px;*/
+    line-height: 20px;
+    margin-right: 10px;
+    margin-left: 10px;
+	font-weight: bold;
+}
+.week-holder{
+	padding: 0px 10px;
+}
+.game-title{
+	font-weight: bold;
+	/*font-size: 1.25vw;*/
+	font-size: 30px;
+	text-align: center;
+    padding-top: 1vw;
+}
+.game-rules{
+	text-align: center;
+    /*font-size: .7vw;*/
+    font-size: 22px;
+}
+.game-scoring table{
+	margin: auto;
+}
+.game-scoring td{
+	font-size: .5vw;
+}
+.season_type select{
+	float: left;
+}
+.season_type{
+	position: absolute;
+	top: 15px;
+    left: 10px;
+}
+#refresh-text{
+	float: left;
+	padding-left: 10px;
+}
+.active-score{
+	font-weight: bold;
+	color: #000;
+}
+.team-logo{
+	width: 50px;
+}
