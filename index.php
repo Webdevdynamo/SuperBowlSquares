@@ -30,14 +30,17 @@ if ($matchId):
 
         <div class="content-wrapper">
             <section class="grid-section">
-                <div class="axis-label top-label">AWAY TEAM</div>
-                <div class="scroll-container">
-                    <div class="grid-flex">
-                        <div class="axis-label left-label">HOME TEAM</div>
+                <div class="axis-label top-label"></div>
+                
+                <div class="main-grid-area">
+                    <div class="axis-label left-label"></div>
+
+                    <div class="scroll-container">
                         <div id="squares-grid"></div>
                     </div>
                 </div>
-                <p class="mobile-hint">&larr; Swipe to view full grid &rarr;</p>
+                
+                <p class="mobile-hint">← Swipe squares to view →</p>
             </section>
 
             <aside class="sidebar">
