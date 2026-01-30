@@ -41,27 +41,19 @@ if (isset($_GET['edit_id'])) {
 // --- 3. HANDLE SAVE (CREATE OR UPDATE) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_match'])) {
     $title = trim($_POST['title']);
-    $slug = strtolower(str_replace(' ', '-', $title));
-    $id = !empty($_POST['match_id']) ? $_POST['match_id'] : "match_" . uniqid();
     
-    // THE FIX: If the input is empty, look for the existing value in the config
-    $startTime = $_POST['start_time'];
-    if (empty($startTime)) {
-        foreach ($config['active_matches'] as $m) {
-            if ($m['id'] === $id) {
-                $startTime = $m['startTime'] ?? ''; 
-                break;
-            }
-        }
-    }
+    // Use the custom ID, sanitizing it for URLs
+    $id = preg_replace('/[^a-z0-9\-]/', '', strtolower(trim($_POST['custom_id'])));
+    $oldId = $_POST['original_id'] ?? $id;
 
     $matchData = [
         "id" => $id,
-        "slug" => $slug,
+        "slug" => $id,
         "title" => $title,
         "api_url" => trim($_POST['api_url']),
-        "startTime" => $startTime, // Now preserved
-        "squares_file" => !empty($_POST['squares_file']) ? $_POST['squares_file'] : "data/squares_$slug.json",
+        "startTime" => $_POST['start_time'] ?? '',
+        // If it's a new match, generate a filename. If editing, keep the one we had.
+        "squares_file" => !empty($_POST['squares_file']) ? $_POST['squares_file'] : "data/squares_$id.json",
         "payouts" => [
             "q1" => (int)$_POST['q1'], 
             "q2" => (int)$_POST['q2'], 
@@ -71,23 +63,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_match'])) {
         "cost_per_square" => (int)$_POST['cost']
     ];
 
+    // Find by OLD ID and replace
     $found = false;
     foreach ($config['active_matches'] as $key => $m) {
-        if ($m['id'] === $id) {
+        if ($m['id'] === $oldId) {
             $config['active_matches'][$key] = $matchData;
             $found = true;
             break;
         }
     }
-
-    if (!$found) {
-        $config['active_matches'][] = $matchData;
-        if (!is_dir('data')) mkdir('data', 0777, true);
-        if (!file_exists($squaresFile)) {
-            $empty = ["game_id" => "", "participants" => [], "grid" => []];
-            file_put_contents($squaresFile, json_encode($empty, JSON_PRETTY_PRINT));
-        }
-    }
+    
+    if (!$found) $config['active_matches'][] = $matchData;
 
     file_put_contents($configFile, json_encode($config, JSON_PRETTY_PRINT));
     header("Location: admin.php?msg=saved");
@@ -149,16 +135,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_match'])) {
             <?= $_GET['msg'] === 'saved' ? 'Match settings updated successfully!' : 'Match deleted.' ?>
         </div>
     <?php endif; ?>
-
     <div class="card">
         <h2><?= $editMatch ? "Edit Match Settings" : "Add New Match" ?></h2>
         <form method="POST">
-            <input type="hidden" name="match_id" value="<?= $editMatch['id'] ?? '' ?>">
+            <input type="hidden" name="original_id" value="<?= $editMatch['id'] ?? '' ?>">
             <input type="hidden" name="squares_file" value="<?= $editMatch['squares_file'] ?? '' ?>">
+            <input type="hidden" name="start_time" value="<?= htmlspecialchars($editMatch['startTime'] ?? '') ?>">
 
             <div class="form-group">
                 <label>Match Title</label>
                 <input type="text" name="title" value="<?= htmlspecialchars($editMatch['title'] ?? '') ?>" placeholder="e.g. AFC Championship - Chiefs vs Bengals" required>
+            </div>
+
+            <div class="form-group">
+                <label>Custom URL Slug (Match ID)</label>
+                <input type="text" name="custom_id" value="<?= htmlspecialchars($editMatch['id'] ?? '') ?>" placeholder="e.g. afc-championship-2026" required>
+                <small style="color:#888;">This will be used in the URL: index.php?id=<b>your-slug</b></small>
             </div>
 
             <div class="form-group">
