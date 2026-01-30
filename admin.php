@@ -42,18 +42,18 @@ if (isset($_GET['edit_id'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_match'])) {
     $title = trim($_POST['title']);
     $slug = strtolower(str_replace(' ', '-', $title));
-    
-    // If we are editing, keep the old ID; otherwise, generate a new one
     $id = !empty($_POST['match_id']) ? $_POST['match_id'] : "match_" . uniqid();
-    
-    // Determine the squares file path
     $squaresFile = !empty($_POST['squares_file']) ? $_POST['squares_file'] : "data/squares_$slug.json";
+
+    // Capture the start_time from the hidden field or text input
+    $startTime = $_POST['start_time'] ?? '';
 
     $matchData = [
         "id" => $id,
         "slug" => $slug,
         "title" => $title,
         "api_url" => trim($_POST['api_url']),
+        "startTime" => $startTime, // This ensures the Lobby has the data
         "squares_file" => $squaresFile,
         "payouts" => [
             "q1" => (int)$_POST['q1'], 
@@ -75,9 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_match'])) {
 
     if (!$found) {
         $config['active_matches'][] = $matchData;
-        // Create the data folder if it doesn't exist
         if (!is_dir('data')) mkdir('data', 0777, true);
-        // Initialize an empty squares file for new matches
         if (!file_exists($squaresFile)) {
             $empty = ["game_id" => "", "participants" => [], "grid" => []];
             file_put_contents($squaresFile, json_encode($empty, JSON_PRETTY_PRINT));
