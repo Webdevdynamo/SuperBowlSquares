@@ -338,9 +338,24 @@ function createSquare(text, className, container) {
 }
 
 function stringToColor(str) {
+    if (!str) return 'transparent';
+    
     let hash = 0;
-    for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    return `hsl(${Math.abs(hash) % 360}, 70%, 90%)`;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    // 1. Hue: Use the hash to pick a spot on the 360° color wheel
+    const h = Math.abs(hash) % 360;
+
+    // 2. Saturation: 75% to 85% keeps it "popping" without being neon-blindness
+    const s = 80;
+
+    // 3. Lightness: 50% to 60% is the "sweet spot" for vibrant colors.
+    // Anything higher becomes pastel; anything lower becomes dark/muddy.
+    const l = 60;
+
+    return `hsl(${h}, ${s}%, ${l}%)`;
 }
 
 // Kick off the app
