@@ -21,8 +21,11 @@ function toggleSwipeHint() {
 
     if (!container || !grid || !hint) return;
 
-    // If the actual width of the grid is greater than the visible area
-    if (grid.offsetWidth > container.offsetWidth) {
+    // We use clientWidth for the visible area and scrollWidth for the actual content width
+    // Adding a 2px buffer to handle sub-pixel rounding in different browsers
+    const isOverflowing = grid.scrollWidth > (container.clientWidth + 2);
+
+    if (isOverflowing) {
         hint.style.display = 'block';
     } else {
         hint.style.display = 'none';
@@ -46,7 +49,7 @@ async function init() {
         // We must draw the grid even if data is missing
         renderStaticGrid();
         // Check hint status on load
-        toggleSwipeHint();
+        setTimeout(toggleSwipeHint, 100);
 
         // Continue with the rest of the UI update
         updateScore();
