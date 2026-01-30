@@ -19,6 +19,9 @@ $msnJson = file_get_contents($match['api_url']);
 $msnData = json_decode($msnJson, true);
 $game = $msnData['value'][0]['games'][0];
 
+// Handle different MSN date keys and formats
+$rawTime = $game['startDateTime'] ?? $game['startTime'] ?? '';
+
 // Process Scores
 $processedTeams = [];
 foreach ($game['participants'] as $p) {
@@ -51,7 +54,13 @@ if (file_exists($squaresPath)) {
         'grid' => []
     ];
 }
-$startTime = $game['startTime'] ?? ''; // Format: "2026-02-08T23:30:00Z"
+// If it's a numeric timestamp (milliseconds), convert to ISO 8601
+if (is_numeric($rawTime)) {
+    $seconds = $rawTime / 1000;
+    $startTime = date('c', $seconds); // Converts to "2026-02-08T18:30:00+00:00"
+} else {
+    $startTime = $rawTime;
+}
 
 // Unified Output
 echo json_encode([
