@@ -51,12 +51,14 @@ if (file_exists($squaresPath)) {
         'grid' => []
     ];
 }
+$startTime = $game['startTime'] ?? ''; // Format: "2026-02-08T23:30:00Z"
 
 // Unified Output
 echo json_encode([
     'settings' => [
         'title' => $match['title'],
-        'payouts' => $match['payouts']
+        'payouts' => $match['payouts'],
+        'startTime' => $startTime // Pass the timestamp to JS
     ],
     'teams' => $processedTeams,
     'status' => $game['gameState']['detailedGameStatus'],
