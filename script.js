@@ -30,6 +30,7 @@ function toggleSwipeHint() {
     } else {
         hint.style.display = 'none';
     }
+    console.log('Grid:', grid.scrollWidth, 'Container:', container.clientWidth);
 }
 
 /**
