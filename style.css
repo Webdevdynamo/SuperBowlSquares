@@ -245,3 +245,29 @@ body {
     align-items: center;
     justify-content: center;
 }
+
+.payout-summary {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #eee;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: inline-flex; /* Keeps it centered if parent is centered */
+}
+
+.payout-summary strong {
+    color: #ffca28; /* Gold color for the labels */
+    margin-right: 3px;
+}
+
+@media (max-width: 600px) {
+    .payout-summary {
+        font-size: 0.75rem;
+        gap: 8px;
+        padding: 5px 10px;
+    }
+}

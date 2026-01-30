@@ -18,6 +18,7 @@ if ($matchId):
         <header class="main-header">
             <div style="text-align: left;"><a href="index.php" style="color: #aaa; text-decoration: none; font-size: 0.8rem;">&larr; Back to Lobby</a></div>
             <h1 id="match-title">Loading Match...</h1>
+            <div id="payout-summary" class="payout-summary"></div>
             <div id="box-score-container">
                 <table class="box-score-table">
                     <thead>

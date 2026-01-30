@@ -96,7 +96,7 @@ async function updateScore() {
 
         // Execute visual updates on the next browser paint for max performance
         window.requestAnimationFrame(() => {
-            updateLabels(data.settings.title, away, home, data.settings.startTime, data.status);
+            updateLabels(data.settings.title, away, home, data.settings.startTime, data.status, data.settings.payouts);
             updateBoxScore(away, home);
             updateWinnersAndPayouts(away, home);
         });
@@ -109,8 +109,9 @@ async function updateScore() {
 /**
  * Updates Axis Labels (Logos and Names)
  */
-function updateLabels(title, away, home, startTime, status) {
+function updateLabels(title, away, home, startTime, status, payouts) {
     const titleEl = document.getElementById('match-title');
+    const payoutEl = document.getElementById('payout-summary');
     const topLabel = document.querySelector('.top-label');
     const leftLabel = document.querySelector('.left-label');
 
@@ -137,6 +138,14 @@ function updateLabels(title, away, home, startTime, status) {
 
     if (titleEl) {
         titleEl.innerHTML = `${title} <div class="kickoff-time">${timeDisplay}</div>`;
+    }
+    if (payoutEl && payouts) {
+        payoutEl.innerHTML = `
+            <span><strong>Q1:</strong> $${payouts.q1}</span>
+            <span><strong>Q2:</strong> $${payouts.q2}</span>
+            <span><strong>Q3:</strong> $${payouts.q3}</span>
+            <span><strong>Final:</strong> $${payouts.final}</span>
+        `;
     }
 
     // 2. Update Logos (Using %20 instead of encoding to avoid + signs)
