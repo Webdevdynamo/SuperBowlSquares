@@ -62,6 +62,16 @@ if (is_numeric($rawTime)) {
     $startTime = $rawTime;
 }
 
+if (!empty($startTime) && $startTime !== ($match['startTime'] ?? '')) {
+    foreach ($config['active_matches'] as &$m) {
+        if ($m['id'] === $matchId) {
+            $m['startTime'] = $startTime; // Update the cached time
+            break;
+        }
+    }
+    file_put_contents('matches.json', json_encode($config, JSON_PRETTY_PRINT));
+}
+
 // Unified Output
 echo json_encode([
     'settings' => [
