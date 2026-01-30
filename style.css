@@ -63,6 +63,7 @@ body {
     /* Grows to fill available space */
     width: 100%; /* Ensures it respects the parent container's width */
     -webkit-overflow-scrolling: touch;
+    max-width: 615px;
 }
 
 .grid-flex { display: flex; width: max-content; }
@@ -212,6 +213,7 @@ body {
     background: var(--header-bg);
     /* border-radius: 8px; */
     overflow: hidden; /* Clips the inner scroll shadow */
+    max-width: fit-content;
 }
 
 /* Static Left Axis Label */
