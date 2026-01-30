@@ -71,18 +71,17 @@ function renderStaticGrid() {
     if (!gridElement) return;
     gridElement.innerHTML = ''; 
 
-    // --- TOP HEADER ROW (Inside Scroll Area) ---
-    // Spacer for the top-left corner
-    createSquare('', 'label', gridElement); 
-    for (let i = 0; i < 10; i++) {
-        createSquare(i, 'label', gridElement);
-    }
+    // --- TOP HEADER ROW ---
+    createSquare('', 'label', gridElement); // Top-left corner spacer
+    for (let i = 0; i < 10; i++) createSquare(i, 'label', gridElement);
+    createSquare('', 'label', gridElement); // Top-right corner spacer
 
     // --- GRID BODY ---
     for (let h = 0; h < 10; h++) {
-        // Vertical Digit Label (Home Score Digit)
+        // 1. LEFT Digit Label
         createSquare(h, 'label', gridElement); 
 
+        // 2. The 10 Squares
         for (let a = 0; a < 10; a++) {
             const name = squareOwners[`${a}-${h}`] || '';
             const sq = createSquare(name, 'square', gridElement);
@@ -90,10 +89,16 @@ function renderStaticGrid() {
             sq.setAttribute('data-owner', name); 
             if (name) sq.style.backgroundColor = stringToColor(name);
         }
+
+        // 3. RIGHT Digit Label (New!)
+        createSquare(h, 'label', gridElement); 
     }
-    // NEW: Trigger the hint check now that the grid is built
-    // We use requestAnimationFrame to ensure the browser has actually 
-    // calculated the layout before we measure it.
+
+    // --- BOTTOM HEADER ROW (New!) ---
+    createSquare('', 'label', gridElement); // Bottom-left corner spacer
+    for (let i = 0; i < 10; i++) createSquare(i, 'label', gridElement);
+    createSquare('', 'label', gridElement); // Bottom-right corner spacer
+
     window.requestAnimationFrame(() => {
         toggleSwipeHint();
     });

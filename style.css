@@ -234,12 +234,13 @@ body {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     background: #fff;
+    max-width: 671px;
 }
 
 #squares-grid {
     display: grid;
     /* Removed the first 40px column since the label is now outside */
-    grid-template-columns: repeat(11, 55px); 
+    grid-template-columns: repeat(12, 55px); 
     gap: 1px;
     background: #bbb;
     width: max-content;
