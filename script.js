@@ -116,6 +116,17 @@ function updateLabels(title, away, home) {
     const topLabel = document.querySelector('.top-label');
     const leftLabel = document.querySelector('.left-label');
 
+    // Format the date/time
+    let timeDisplay = "";
+    if (status === "In-Progress") {
+        timeDisplay = '<span class="live-pulse">🔴 LIVE</span>';
+    } else if (startTime) {
+        const date = new Date(startTime);
+        timeDisplay = date.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    titleEl.innerHTML = `${title} <div class="kickoff-time">${timeDisplay}</div>`;
+
     topLabel.innerHTML = `
         <img src="${logoBase}${encodeURIComponent(away.fullName)} Logo.png" class="axis-logo">
         <div class="label-text">${away.fullName.toUpperCase()}</div>

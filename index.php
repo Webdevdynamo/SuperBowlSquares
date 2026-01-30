@@ -56,6 +56,13 @@ if ($matchId):
 <?php 
 // If NO Match ID is provided, we show the Lobby
 else: 
+
+function formatGameTime($utcString) {
+    if (empty($utcString)) return "Time TBD";
+    $date = new DateTime($utcString);
+    $date->setTimezone(new DateTimeZone('America/Phoenix')); // Adjust to your local timezone
+    return $date->format('M j, g:i A');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -80,7 +87,7 @@ else:
                     <div class="match-info">
                         <h2><?= $match['title'] ?></h2>
                         <div class="match-meta" style="color:#888; font-size: 0.9rem;">
-                            $<?= $match['cost_per_square'] ?> / square | 
+                            <span class="game-time">📅 <?= formatGameTime($match['startTime'] ?? '') ?></span> | $<?= $match['cost_per_square'] ?> / square | 
                             Prize Pool: $<?= array_sum($match['payouts']) ?>
                         </div>
                     </div>
