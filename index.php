@@ -57,11 +57,20 @@ if ($matchId):
 // If NO Match ID is provided, we show the Lobby
 else: 
 
-function formatGameTime($utcString) {
-    if (empty($utcString)) return "Time TBD";
+function formatGameTime($timeInput) {
+    if (empty($timeInput)) return "Time TBD";
+
     try {
-        $date = new DateTime($utcString);
-        // Using America/Phoenix for Prescott, AZ
+        // Check if the input is a millisecond timestamp (like 1770593400000)
+        if (is_numeric($timeInput) && strlen($timeInput) > 10) {
+            $seconds = $timeInput / 1000;
+            $date = new DateTime("@$seconds"); // Create from Unix timestamp
+        } else {
+            // Otherwise, treat as a standard date string
+            $date = new DateTime($timeInput);
+        }
+
+        // Set to Arizona Time
         $date->setTimezone(new DateTimeZone('America/Phoenix')); 
         return $date->format('M j, g:i A');
     } catch (Exception $e) {
