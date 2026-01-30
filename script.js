@@ -90,6 +90,12 @@ function renderStaticGrid() {
             if (name) sq.style.backgroundColor = stringToColor(name);
         }
     }
+    // NEW: Trigger the hint check now that the grid is built
+    // We use requestAnimationFrame to ensure the browser has actually 
+    // calculated the layout before we measure it.
+    window.requestAnimationFrame(() => {
+        toggleSwipeHint();
+    });
 }
 
 /**
