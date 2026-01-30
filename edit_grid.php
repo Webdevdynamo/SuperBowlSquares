@@ -73,13 +73,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_sq'])) {
         .cell.occupied { background: #e8f5e9; font-weight: bold; }
         
         .axis-title-admin { 
-            background: #d32f2f; color: white; padding: 10px; 
+            color: white; padding: 10px; 
             text-align: center; font-weight: bold; width: 100%;
             display: flex; align-items: center; justify-content: center; gap: 10px;
         }
         .side-title-admin {
             writing-mode: vertical-rl; transform: rotate(180deg);
-            background: #d32f2f; color: white; padding: 10px;
+            color: white; padding: 10px;
             display: flex; align-items: center; justify-content: center; gap: 10px;
         }
     </style>
@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_sq'])) {
             <div style="display: flex;">
                 <div class="side-title-admin">
                     HOME: <?= strtoupper($homeTeam) ?>
-                    <img src="<?= $logoBase . $homeTeam ?> Logo.png" style="height:30px;">
+                    <img src="<?= $logoBase . $homeTeam ?> Logo.png" style="height:30px;transform: rotate(180deg);">
                 </div>
 
                 <div class="admin-grid">
