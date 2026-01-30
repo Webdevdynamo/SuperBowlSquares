@@ -21,16 +21,17 @@ function toggleSwipeHint() {
 
     if (!container || !grid || !hint) return;
 
-    // We use clientWidth for the visible area and scrollWidth for the actual content width
-    // Adding a 2px buffer to handle sub-pixel rounding in different browsers
-    const isOverflowing = grid.scrollWidth > (container.clientWidth + 2);
+    const containerWidth = container.getBoundingClientRect().width;
+    const gridWidth = grid.scrollWidth;
 
-    if (isOverflowing) {
-        hint.style.display = 'block';
-    } else {
-        hint.style.display = 'none';
-    }
-    console.log('Grid:', grid.scrollWidth, 'Container:', container.clientWidth);
+    // Use a small 5px threshold to prevent "flickering" 
+    // on devices with weird zoom levels or scrollbars
+    const isOverflowing = gridWidth > (containerWidth + 5);
+
+    hint.style.display = isOverflowing ? 'block' : 'none';
+    
+    // Debugging: Keep this for one refresh to see the real numbers
+    console.log(`Visible Area: ${containerWidth}px | Full Grid: ${gridWidth}px`);
 }
 
 /**
