@@ -109,33 +109,52 @@ async function updateScore() {
 /**
  * Updates Axis Labels (Logos and Names)
  */
-function updateLabels(title, away, home) {
+function updateLabels(title, away, home, startTime, status) {
     const titleEl = document.getElementById('match-title');
-    if (titleEl) titleEl.innerText = title;
-
     const topLabel = document.querySelector('.top-label');
     const leftLabel = document.querySelector('.left-label');
 
-    // Format the date/time
+    // 1. Format the date/time
     let timeDisplay = "";
-    if (status === "In-Progress") {
+    
+    // Check if game is live
+    if (status === "In-Progress" || status === "Live") {
         timeDisplay = '<span class="live-pulse">🔴 LIVE</span>';
     } else if (startTime) {
-        const date = new Date(startTime);
-        timeDisplay = date.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        // If startTime is a numeric string (like "1770593400000"), convert to number
+        // Otherwise, treat as a standard ISO string
+        const dateValue = isNaN(startTime) ? startTime : parseInt(startTime);
+        const date = new Date(dateValue);
+        
+        timeDisplay = date.toLocaleString([], { 
+            weekday: 'short',
+            month: 'short', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
     }
 
-    titleEl.innerHTML = `${title} <div class="kickoff-time">${timeDisplay}</div>`;
+    if (titleEl) {
+        titleEl.innerHTML = `${title} <div class="kickoff-time">${timeDisplay}</div>`;
+    }
 
-    topLabel.innerHTML = `
-        <img src="${logoBase}${encodeURIComponent(away.fullName)} Logo.png" class="axis-logo">
-        <div class="label-text">${away.fullName.toUpperCase()}</div>
-    `;
+    // 2. Update Logos (Using %20 instead of encoding to avoid + signs)
+    if (topLabel && away) {
+        const awayLogo = `${logoBase}${away.fullName.replace(/ /g, '%20')} Logo.png`;
+        topLabel.innerHTML = `
+            <img src="${awayLogo}" class="axis-logo">
+            <div class="label-text">${away.fullName.toUpperCase()}</div>
+        `;
+    }
 
-    leftLabel.innerHTML = `
-        <img src="${logoBase}${encodeURIComponent(home.fullName)} Logo.png" class="axis-logo">
-        <div class="label-text"><span>${home.fullName.toUpperCase()}</span></div>
-    `;
+    if (leftLabel && home) {
+        const homeLogo = `${logoBase}${home.fullName.replace(/ /g, '%20')} Logo.png`;
+        leftLabel.innerHTML = `
+            <img src="${homeLogo}" class="axis-logo">
+            <div class="label-text"><span>${home.fullName.toUpperCase()}</span></div>
+        `;
+    }
 }
 
 /**

@@ -59,9 +59,14 @@ else:
 
 function formatGameTime($utcString) {
     if (empty($utcString)) return "Time TBD";
-    $date = new DateTime($utcString);
-    $date->setTimezone(new DateTimeZone('America/Phoenix')); // Adjust to your local timezone
-    return $date->format('M j, g:i A');
+    try {
+        $date = new DateTime($utcString);
+        // Using America/Phoenix for Prescott, AZ
+        $date->setTimezone(new DateTimeZone('America/Phoenix')); 
+        return $date->format('M j, g:i A');
+    } catch (Exception $e) {
+        return "Time TBD";
+    }
 }
 ?>
 <!DOCTYPE html>
