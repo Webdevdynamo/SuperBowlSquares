@@ -208,10 +208,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_match'])) {
                     <div class="actions">
                         <a href="edit_grid.php?id=<?= $m['id'] ?>" class="link-grid">Grid</a>
                         <a href="admin.php?edit_id=<?= $m['id'] ?>" class="link-edit">Settings</a>
+                        
+                        <a href="#" onclick="showQR('<?= $m['id'] ?>'); return false;" class="link-edit" style="color: #673ab7;">QR</a>
+                        
                         <a href="admin.php?delete_id=<?= $m['id'] ?>" 
-                           class="link-delete" 
-                           onclick="return confirm('WARNING: Are you sure you want to delete this match? This cannot be undone.')"
-                           title="Delete Match">&times;</a>
+                        class="link-delete" 
+                        onclick="return confirm('WARNING: Are you sure you want to delete this match?')"
+                        title="Delete Match">&times;</a>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -219,6 +222,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_match'])) {
     </div>
 
 </div>
-
+<script>
+    function showQR(slug) {
+    // Get the base URL of your current site
+    const baseUrl = window.location.origin + window.location.pathname.replace('admin.php', 'index.php');
+    const matchUrl = `${baseUrl}?id=${slug}`;
+    
+    // Use an API to generate the QR PNG
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(matchUrl)}`;
+    
+    // Open in a new small window for easy printing
+    const qrWindow = window.open('', 'QR Code', 'width=400,height=450');
+    qrWindow.document.write(`
+        <div style="text-align:center; font-family:sans-serif; padding:20px;">
+            <h2>QR Code for Match</h2>
+            <p style="color:#666;">Scan to join the grid</p>
+            <img src="${qrUrl}" alt="QR Code" style="margin:20px 0; border:1px solid #eee;">
+            <br>
+            <button onclick="window.print()" style="padding:10px 20px; cursor:pointer;">Print QR Code</button>
+        </div>
+    `);
+}
+</script>
 </body>
 </html>
