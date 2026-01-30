@@ -96,7 +96,7 @@ async function updateScore() {
 
         // Execute visual updates on the next browser paint for max performance
         window.requestAnimationFrame(() => {
-            updateLabels(data.settings.title, away, home);
+            updateLabels(data.settings.title, away, home, data.settings.startTime, data.status);
             updateBoxScore(away, home);
             updateWinnersAndPayouts(away, home);
         });
