@@ -43,18 +43,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_match'])) {
     $title = trim($_POST['title']);
     $slug = strtolower(str_replace(' ', '-', $title));
     $id = !empty($_POST['match_id']) ? $_POST['match_id'] : "match_" . uniqid();
-    $squaresFile = !empty($_POST['squares_file']) ? $_POST['squares_file'] : "data/squares_$slug.json";
-
-    // Capture the start_time from the hidden field or text input
-    $startTime = $_POST['start_time'] ?? '';
+    
+    // THE FIX: If the input is empty, look for the existing value in the config
+    $startTime = $_POST['start_time'];
+    if (empty($startTime)) {
+        foreach ($config['active_matches'] as $m) {
+            if ($m['id'] === $id) {
+                $startTime = $m['startTime'] ?? ''; 
+                break;
+            }
+        }
+    }
 
     $matchData = [
         "id" => $id,
         "slug" => $slug,
         "title" => $title,
         "api_url" => trim($_POST['api_url']),
-        "startTime" => $startTime, // This ensures the Lobby has the data
-        "squares_file" => $squaresFile,
+        "startTime" => $startTime, // Now preserved
+        "squares_file" => !empty($_POST['squares_file']) ? $_POST['squares_file'] : "data/squares_$slug.json",
         "payouts" => [
             "q1" => (int)$_POST['q1'], 
             "q2" => (int)$_POST['q2'], 
