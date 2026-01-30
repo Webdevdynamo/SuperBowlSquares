@@ -13,6 +13,22 @@ let PAYOUT_VALS = { q1: 0, q2: 0, q3: 0, final: 0 };
 let squareOwners = {};
 let allParticipants = [];
 
+
+function toggleSwipeHint() {
+    const container = document.querySelector('.scroll-container');
+    const grid = document.getElementById('squares-grid');
+    const hint = document.getElementById('mobile-swipe-hint');
+
+    if (!container || !grid || !hint) return;
+
+    // If the actual width of the grid is greater than the visible area
+    if (grid.offsetWidth > container.offsetWidth) {
+        hint.style.display = 'block';
+    } else {
+        hint.style.display = 'none';
+    }
+}
+
 /**
  * Initialization: Runs on page load
  */
@@ -29,6 +45,8 @@ async function init() {
 
         // We must draw the grid even if data is missing
         renderStaticGrid();
+        // Check hint status on load
+        toggleSwipeHint();
 
         // Continue with the rest of the UI update
         updateScore();

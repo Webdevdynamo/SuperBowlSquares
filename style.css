@@ -271,3 +271,18 @@ body {
         padding: 5px 10px;
     }
 }
+
+.mobile-hint {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 10px;
+    font-style: italic;
+    /* Optional: subtle animation */
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

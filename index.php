@@ -41,7 +41,7 @@ if ($matchId):
                     </div>
                 </div>
                 
-                <p class="mobile-hint">← Swipe squares to view →</p>
+                <p id="mobile-swipe-hint" class="mobile-hint" style="display: none;">← Swipe squares to view →</p>
             </section>
 
             <aside class="sidebar">
