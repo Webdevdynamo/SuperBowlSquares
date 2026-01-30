@@ -92,14 +92,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_sq'])) {
     <div style="display: flex; gap: 20px;">
         <div class="grid-wrapper">
             <div class="axis-title-admin">
-                <img src="<?= $logoBase . urlencode($awayTeam) ?> Logo.png" style="height:30px;">
+                <img src="<?= $logoBase . $awayTeam ?> Logo.png" style="height:30px;">
                 AWAY: <?= strtoupper($awayTeam) ?>
             </div>
 
             <div style="display: flex;">
                 <div class="side-title-admin">
                     HOME: <?= strtoupper($homeTeam) ?>
-                    <img src="<?= $logoBase . urlencode($homeTeam) ?> Logo.png" style="height:30px;">
+                    <img src="<?= $logoBase . $homeTeam ?> Logo.png" style="height:30px;">
                 </div>
 
                 <div class="admin-grid">
