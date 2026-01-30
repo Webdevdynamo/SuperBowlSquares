@@ -54,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_sq'])) {
 <head>
     <title>Edit Grid - <?= $match['title'] ?></title>
     <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" type="image/png" href="./images/favicon.png">
     <style>
         .admin-layout { max-width: 1200px; margin: 20px auto; padding: 20px; }
         .grid-wrapper { display: flex; flex-direction: column; align-items: center; }
