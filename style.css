@@ -375,7 +375,7 @@ body {
     border-radius: 8px;
     min-width: 280px;
     /* max-width: 350px; */
-    align-self: flex-start; /* Prevents sidebar from stretching vertically */
+    /* align-self: flex-start; */
     position: sticky;
     top: 20px;
 }
