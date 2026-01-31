@@ -133,6 +133,8 @@ async function updateScore() {
             updateLabels(data.settings.title, away, home, data.settings.startTime, data.status, data.settings.payouts);
             updateBoxScore(away, home);
             updateWinnersAndPayouts(away, home);
+
+            highlightWinner(away.total, home.total);
         });
 
     } catch (err) {
@@ -357,6 +359,51 @@ function stringToColor(str) {
 
     return `hsl(${h}, ${s}%, ${l}%)`;
 }
+
+let lastKnownScore = { away: -1, home: -1 };
+
+function highlightWinner(awayScore, homeScore) {
+    const awayDigit = awayScore % 10;
+    const homeDigit = homeScore % 10;
+    const winningId = `sq-${awayDigit}-${homeDigit}`;
+
+    // Remove old highlights
+    document.querySelectorAll('.square').forEach(el => el.classList.remove('winning-now'));
+
+    // Highlight new winner
+    const winner = document.getElementById(winningId);
+    if (winner) {
+        winner.classList.add('winning-now');
+
+        // If the score actually changed, do something extra spicy
+        if (awayScore !== lastKnownScore.away || homeScore !== lastKnownScore.home) {
+            console.log("🏆 SCORE CHANGE DETECTED!");
+            triggerCelebration(winner);
+            
+            // Update the tracker
+            lastKnownScore = { away: awayScore, home: homeScore };
+        }
+    }
+}
+
+function triggerCelebration(element) {
+    // Flash the header or the square
+    document.body.classList.add('score-changed');
+    setTimeout(() => document.body.classList.remove('score-changed'), 1000);
+    
+    // You could add a sound effect here: 
+    // new Audio('assets/stadium-horn.mp3').play();
+}
+
+window.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 's') {
+        console.log("DEBUG: Simulating score change...");
+        // Randomly simulate a score for testing
+        const testAway = Math.floor(Math.random() * 30);
+        const testHome = Math.floor(Math.random() * 30);
+        highlightWinner(testAway, testHome);
+    }
+});
 
 // Kick off the app
 init();

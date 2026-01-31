@@ -294,3 +294,23 @@ body {
     from { opacity: 0; }
     to { opacity: 1; }
 }
+
+/* The Pulse Effect */
+.winning-now {
+    outline: 4px solid #ffca28;
+    outline-offset: -4px;
+    box-shadow: 0 0 20px #ffca28;
+    z-index: 10;
+    transform: scale(1.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Optional: Score Change Flash */
+.score-changed {
+    animation: scoreFlash 1s ease-out;
+}
+
+@keyframes scoreFlash {
+    0% { background-color: rgba(255, 202, 40, 0.8); }
+    100% { background-color: transparent; }
+}
