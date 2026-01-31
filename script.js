@@ -340,6 +340,7 @@ function renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted) {
     const counts = {};
     if (Array.isArray(allParticipants)) {
         allParticipants.forEach(p => {
+            console.log(p);
             // THE FIX: Check if p is a string before calling .trim()
             if (typeof p === 'string' && p.trim() !== "") {
                 const name = p.trim();
@@ -348,7 +349,6 @@ function renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted) {
         });
     }
 
-    console.log(counts);
     // Get unique names, sort them, and build the rows
     const sortedNames = Object.keys(counts).sort((a, b) => a.localeCompare(b));
     console.log(sortedNames);
