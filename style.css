@@ -58,7 +58,7 @@ body {
     overflow-x: auto;
     background: #fff;
     padding: 10px;
-    border-radius: 8px;
+    /* border-radius: 8px; */
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);flex: 1; 
     /* Grows to fill available space */
     width: 100%; /* Ensures it respects the parent container's width */
