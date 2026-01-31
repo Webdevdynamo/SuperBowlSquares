@@ -295,19 +295,22 @@ function updateWinnersAndPayouts(away, home, status) {
     // Logic: Only identify a winner if the game is Live/Final OR if someone has actually scored.
     const someoneScored = (away.total > 0 || home.total > 0);
     const gameActive = (status === "In-Progress" || status === "Live" || status === "Final" || status === "Completed");
+    const isCurrentlyLive = (status === "In-Progress" || status === "Live");
 
     let liveWinner = "TBD"; 
-    console.log(status);
-    if(status != "Final"){
-        if (gameActive || someoneScored) {
-            liveWinner = squareOwners[`${away.total % 10}-${home.total % 10}`] || "Unclaimed";
-        } else {
-            liveWinner = "Game hasn't started";
-        }
+    let showLiveCard = false;
+
+    if (isCurrentlyLive) {
+        liveWinner = squareOwners[`${away.total % 10}-${home.total % 10}`] || "Unclaimed";
+        showLiveCard = true;
+    } else if (!isGameOver && someoneScored) {
+        // This handles edge cases where the status might lag but points are on the board
+        liveWinner = squareOwners[`${away.total % 10}-${home.total % 10}`] || "Unclaimed";
+        showLiveCard = true;
     }
 
     // 4. Update the Sidebar
-    renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted);
+    renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted, showLiveCard);
 }
 
 function getCurrentQuarterIndex(away, home) {
@@ -329,19 +332,12 @@ function renderPayoutLeaderboard(winnersByQuarter, liveWinner, showLiveWinner) {
     let html = `<div class="sidebar-section"><h3>🏆 Leaderboard</h3>`;
 
     // A. Current Winning Square
-    if (showLiveWinner && liveWinner !== "Game hasn't started") {
+    if (showLiveWinner) {
         html += `
             <div class="leader-card current-winner">
                 <span class="label">Winning Now</span>
                 <span class="name">${liveWinner}</span>
                 <span class="amount">Est. $${PAYOUT_VALS.final}</span>
-            </div>`;
-    } else {
-        // Show a placeholder or "Waiting for Kickoff"
-        html += `
-            <div class="leader-card" style="border-left-color: #666; opacity: 0.7;">
-                <span class="label">Winning Now</span>
-                <span class="name" style="font-size: 0.9rem; color: #888;">Waiting for Kickoff...</span>
             </div>`;
     }
 
