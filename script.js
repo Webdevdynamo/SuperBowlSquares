@@ -338,7 +338,6 @@ function renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted) {
     // C. Logic Fix: Filter out empty strings, count squares, and sort
     // We create an object to count occurrences: { "Dominic": 5, "Kelly": 3 }
     const counts = {};
-    console.log(allParticipants);
     if (Array.isArray(allParticipants)) {
         allParticipants.forEach(p => {
             // THE FIX: Check if p is a string before calling .trim()
@@ -351,6 +350,7 @@ function renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted) {
 
     // Get unique names, sort them, and build the rows
     const sortedNames = Object.keys(counts).sort((a, b) => a.localeCompare(b));
+    console.log(sortedNames);
 
     if (sortedNames.length === 0) {
         html += `<div class="participant-row" style="color:#666; font-style:italic;">No squares claimed yet.</div>`;
