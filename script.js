@@ -302,6 +302,7 @@ function getCurrentQuarterIndex(away, home) {
 function renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted) {
     const sidebar = document.getElementById('participants-list');
     if (!sidebar) return;
+    console.log("HERE");
 
     let html = `<div class="sidebar-section"><h3>🏆 Leaderboard</h3>`;
 
