@@ -314,3 +314,27 @@ body {
     0% { background-color: rgba(255, 202, 40, 0.8); }
     100% { background-color: transparent; }
 }
+
+.leader-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    border-left: 4px solid #444;
+}
+
+.current-winner {
+    background: rgba(255, 202, 40, 0.1);
+    border-left-color: #ffca28;
+    box-shadow: 0 0 15px rgba(255, 202, 40, 0.1);
+}
+
+.winner-payout {
+    border-left-color: #4caf50; /* Green for confirmed wins */
+}
+
+.leader-card .label { font-size: 0.7rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+.leader-card .name { font-size: 1.1rem; font-weight: bold; margin: 2px 0; }
+.leader-card .amount { font-size: 0.9rem; color: #ffca28; font-family: monospace; }

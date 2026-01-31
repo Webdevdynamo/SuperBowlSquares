@@ -228,7 +228,7 @@ function updateBoxScore(away, home) {
  * Handles Real-Time Grid Highlighting and Payout Calculation
  */
 function updateWinnersAndPayouts(away, home, status) {
-    const winners = [];
+    const winnersByQuarter = [null, null, null, null]; // To store specific Q winners
     
     // 1. Reset current grid visual state
     document.querySelectorAll('.square').forEach(s => {
@@ -238,38 +238,29 @@ function updateWinnersAndPayouts(away, home, status) {
         s.innerText = s.getAttribute('data-owner') || ''; 
     });
 
-    // 2. Define the game state
     const isGameStarted = (status !== "Scheduled" && status !== "Pre-Game");
     const isGameOver = (status === "Final" || status === "Completed");
 
-    // 3. Loop through 4 Quarters
+    // 2. Track Quarters
     for (let i = 0; i < 4; i++) {
         const awayQScore = away.quarters[i];
         const homeQScore = home.quarters[i];
         const combinedScore = awayQScore + homeQScore;
 
-        // LOGIC: A quarter only has a "winner" if:
-        // A) The combined score for that quarter is > 0
-        // B) OR the game is completely over (handles 0-0 Final ties, though rare)
         if (isGameStarted && (combinedScore > 0 || isGameOver)) {
-            
             const aDigit = awayQScore % 10;
             const hDigit = homeQScore % 10;
-            const winnerName = squareOwners[`${aDigit}-${hDigit}`];
+            const winnerName = squareOwners[`${aDigit}-${hDigit}`] || "Unclaimed";
             
-            // Only add the marker if this is the CURRENT quarter being played
-            // or if it's a finished quarter.
-            // We determine "Current Quarter" by finding the highest 'i' where a score exists.
-            const latestQuarterWithScore = away.quarters.findLastIndex(q => q > 0) || 0;
+            // Determine "Current Quarter" index
+            const latestQuarterIdx = away.quarters.findLastIndex(q => q > 0);
 
-            if (i <= latestQuarterWithScore || isGameOver) {
-                winners.push(winnerName);
+            if (i <= latestQuarterIdx || isGameOver) {
+                winnersByQuarter[i] = winnerName; // Store for the leaderboard
 
                 const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
                 if (el) {
-                    // Mark as Active if it's the latest quarter or Final. 
-                    // Otherwise mark as Past.
-                    const isLatest = (i === latestQuarterWithScore) || isGameOver;
+                    const isLatest = (i === latestQuarterIdx) || isGameOver;
                     el.classList.add(isLatest ? 'active-winner' : 'past-winner');
                     
                     const badge = document.createElement('span');
@@ -281,7 +272,11 @@ function updateWinnersAndPayouts(away, home, status) {
         }
     }
 
-    renderPayoutLeaderboard(winners);
+    // 3. Determine the actual LIVE leader based on the current total score
+    const liveWinner = (isGameStarted) ? (squareOwners[`${away.total % 10}-${home.total % 10}`] || "Unclaimed") : "TBD";
+
+    // 4. Update the Sidebar
+    renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted);
 }
 
 function getCurrentQuarterIndex(away, home) {
@@ -293,39 +288,47 @@ function getCurrentQuarterIndex(away, home) {
 /**
  * Renders the combined Participant List + Earnings
  */
-function renderPayoutLeaderboard(winners) {
-    const container = document.getElementById('payout-list');
-    if (!container) return;
+function renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted) {
+    const sidebar = document.getElementById('participants-list');
+    if (!sidebar) return;
 
-    // GRACEFUL FAIL: Handle empty participant list
-    if (allParticipants.length === 0) {
-        container.innerHTML = `<div class="payout-item"><em>No participants assigned yet.</em></div>`;
-        return;
+    let html = `<div class="sidebar-section"><h3>🏆 Leaderboard</h3>`;
+
+    // A. Current Winning Square (High Visibility)
+    if (isGameStarted) {
+        html += `
+            <div class="leader-card current-winner">
+                <span class="label">Winning Now</span>
+                <span class="name">${liveWinner}</span>
+                <span class="amount">Est. $${PAYOUT_VALS.final}</span>
+            </div>`;
     }
 
-    const earnings = {};
-    winners.forEach((name, i) => {
-        if (!name) return;
-        earnings[name] = (earnings[name] || 0) + (PAYOUT_VALS[PAYOUT_KEYS[i]] ?? 0);
+    // B. Past Payouts
+    const labels = ['Q1 Winner', 'Q2 Winner', 'Q3 Winner', 'Final Winner'];
+    const payoutKeys = ['q1', 'q2', 'q3', 'final'];
+
+    winnersByQuarter.forEach((winner, i) => {
+        if (winner) {
+            html += `
+                <div class="leader-card winner-payout">
+                    <span class="label">${labels[i]}</span>
+                    <span class="name">${winner}</span>
+                    <span class="amount">$${PAYOUT_VALS[payoutKeys[i]]}</span>
+                </div>`;
+        }
     });
 
-    const sortedList = [...allParticipants].sort((a, b) => {
-        const earnA = earnings[a.name] || 0;
-        const earnB = earnings[b.name] || 0;
-        return earnB - earnA || b.count - a.count;
+    html += `</div><hr><div class="sidebar-section"><h3>👥 All Participants</h3>`;
+    
+    // C. Alphabetical List of All Players
+    const uniqueParticipants = [...new Set(allParticipants)].sort();
+    uniqueParticipants.forEach(p => {
+        html += `<div class="participant-row">${p}</div>`;
     });
 
-    container.innerHTML = sortedList.map(p => {
-        const earned = earnings[p.name] || 0;
-        return `
-            <div class="participant-row ${earned > 0 ? 'has-earnings' : ''}">
-                <div class="p-info">
-                    <span class="p-name">${p.name}</span>
-                    <span class="p-count">${p.count} Squares</span>
-                </div>
-                <div class="p-payout">${earned > 0 ? `$${earned}` : '--'}</div>
-            </div>`;
-    }).join('');
+    html += `</div>`;
+    sidebar.innerHTML = html;
 }
 
 /**
