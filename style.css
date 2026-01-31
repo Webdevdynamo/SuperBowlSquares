@@ -138,7 +138,7 @@ body {
 }
 
 /* --- Sidebar Payouts --- */
-.sidebar { background: #fff; color: #000; padding: 15px; border-radius: 12px; }
+.sidebar { background: #fff; padding: 15px; border-radius: 12px; }
 .sidebar h3 { margin-top: 0; border-bottom: 2px solid #333; padding-bottom: 5px; }
 .payout-item { 
     display: flex; justify-content: space-between; 
