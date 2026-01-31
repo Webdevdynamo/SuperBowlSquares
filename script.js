@@ -299,9 +299,6 @@ function updateWinnersAndPayouts(away, home, status) {
 
     let liveWinner = "TBD"; 
     let showLiveCard = false;
-    console.log(status);
-    console.log(isGameOver);
-    console.log(someoneScored);
     if (isCurrentlyLive) {
         liveWinner = squareOwners[`${away.total % 10}-${home.total % 10}`] || "Unclaimed";
         showLiveCard = true;
@@ -310,10 +307,9 @@ function updateWinnersAndPayouts(away, home, status) {
         liveWinner = squareOwners[`${away.total % 10}-${home.total % 10}`] || "Unclaimed";
         showLiveCard = true;
     }
-    console.log(showLiveCard);
 
     // 4. Update the Sidebar
-    renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted, showLiveCard);
+    renderPayoutLeaderboard(winnersByQuarter, liveWinner, showLiveCard);
 }
 
 function getCurrentQuarterIndex(away, home) {
