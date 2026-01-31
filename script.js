@@ -274,10 +274,18 @@ function updateWinnersAndPayouts(away, home, status) {
                     const isLatest = (i === latestQuarterIdx) || isGameOver;
                     el.classList.add(isLatest ? 'active-winner' : 'past-winner');
                     
-                    const badge = document.createElement('span');
-                    badge.className = 'q-badge';
-                    badge.innerText = (i === 3) ? 'F' : `Q${i+1}`;
-                    el.appendChild(badge);
+                    // THE FIX: Check if THIS specific quarter badge already exists
+                    // This prevents badges from piling up on every 60-second refresh
+                    const badgeClass = `q${i + 1}`;
+                    if (!el.querySelector(`.${badgeClass}`)) {
+                        const badge = document.createElement('span');
+                        
+                        // Apply the base style AND the corner-specific class (q1, q2, q3, or q4)
+                        badge.className = `q-badge ${badgeClass}`;
+                        
+                        badge.innerText = (i === 3) ? 'F' : `Q${i + 1}`;
+                        el.appendChild(badge);
+                    }
                 }
             }
         }
