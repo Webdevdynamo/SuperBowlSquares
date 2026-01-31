@@ -298,7 +298,7 @@ function updateWinnersAndPayouts(away, home, status) {
 
     let liveWinner = "TBD"; 
     console.log(status);
-    if ((gameActive || someoneScored) && status != "Completed") {
+    if ((gameActive || someoneScored) && status != "Final") {
         liveWinner = squareOwners[`${away.total % 10}-${home.total % 10}`] || "Unclaimed";
     } else {
         liveWinner = "Game hasn't started";
