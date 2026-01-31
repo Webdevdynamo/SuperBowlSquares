@@ -300,8 +300,11 @@ function getCurrentQuarterIndex(away, home) {
  * Renders the combined Participant List + Earnings
  */
 function renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted) {
-    const sidebar = document.getElementById('payout-list');
-    if (!sidebar) return;
+    const sidebar = document.getElementById('participants-list'); // Matches the HTML ID
+    if (!sidebar) {
+        console.error("Sidebar container 'participants-list' not found in HTML!");
+        return;
+    }
 
     let html = `<div class="sidebar-section"><h3>🏆 Leaderboard</h3>`;
 

@@ -47,7 +47,7 @@ if ($matchId):
 
             <aside class="sidebar">
                 <h3>Participants & Payouts</h3>
-                <div id="payout-list"></div>
+                <div id="participants-list"></div>
             </aside>
         </div>
     </div>
