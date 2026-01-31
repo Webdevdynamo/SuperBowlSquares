@@ -374,7 +374,7 @@ body {
     padding: 20px;
     border-radius: 8px;
     min-width: 280px;
-    /* max-width: 350px; */
+    max-width: 734px;
     /* align-self: flex-start; */
     position: sticky;
     top: 20px;
