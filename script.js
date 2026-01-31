@@ -310,6 +310,7 @@ function updateWinnersAndPayouts(away, home, status) {
         liveWinner = squareOwners[`${away.total % 10}-${home.total % 10}`] || "Unclaimed";
         showLiveCard = true;
     }
+    console.log(showLiveCard);
 
     // 4. Update the Sidebar
     renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted, showLiveCard);
