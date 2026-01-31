@@ -367,20 +367,26 @@ function highlightWinner(awayScore, homeScore) {
     const homeDigit = homeScore % 10;
     const winningId = `sq-${awayDigit}-${homeDigit}`;
 
-    // Remove old highlights
+    // 1. Remove old highlights
     document.querySelectorAll('.square').forEach(el => el.classList.remove('winning-now'));
 
-    // Highlight new winner
+    // 2. Add highlight to the current winner
     const winner = document.getElementById(winningId);
     if (winner) {
         winner.classList.add('winning-now');
 
-        // If the score actually changed, do something extra spicy
-        if (awayScore !== lastKnownScore.away || homeScore !== lastKnownScore.home) {
-            console.log("🏆 SCORE CHANGE DETECTED!");
-            triggerCelebration(winner);
+        // 3. THE FIX: Only celebrate if it's NOT the first time we've seen a score
+        const isFirstLoad = (lastKnownScore.away === -1);
+        const scoreChanged = (awayScore !== lastKnownScore.away || homeScore !== lastKnownScore.home);
+
+        if (scoreChanged) {
+            // Only trigger the flash/scroll if this isn't the initial page load
+            if (!isFirstLoad) {
+                console.log("🔥 Score Update! Triggering celebration.");
+                triggerCelebration(winner);
+            }
             
-            // Update the tracker
+            // Always update the tracker so the NEXT change is detected correctly
             lastKnownScore = { away: awayScore, home: homeScore };
         }
     }
