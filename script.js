@@ -299,7 +299,7 @@ function updateWinnersAndPayouts(away, home, status) {
 
     let liveWinner = "TBD"; 
     let showLiveCard = false;
-
+    console.log(status);
     if (isCurrentlyLive) {
         liveWinner = squareOwners[`${away.total % 10}-${home.total % 10}`] || "Unclaimed";
         showLiveCard = true;
