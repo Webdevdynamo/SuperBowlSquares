@@ -342,8 +342,8 @@ function renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted) {
         allParticipants.forEach(p => {
             console.log(p);
             // THE FIX: Check if p is a string before calling .trim()
-            if (typeof p === 'string' && p.trim() !== "") {
-                const name = p.trim();
+            if (typeof p.name === 'string' && p.name.trim() !== "") {
+                const name = p.name.trim();
                 counts[name] = (counts[name] || 0) + 1;
             }
         });
