@@ -340,11 +340,16 @@ function renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted) {
     const counts = {};
     if (Array.isArray(allParticipants)) {
         allParticipants.forEach(p => {
-            console.log(p);
-            // THE FIX: Check if p is a string before calling .trim()
-            if (typeof p.name === 'string' && p.name.trim() !== "") {
+            // Ensure p exists and has a valid name
+            if (p && typeof p.name === 'string' && p.name.trim() !== "") {
                 const name = p.name.trim();
-                counts[name] = (counts[name] || 0) + 1;
+                
+                // If the object has a .count property, use it; 
+                // otherwise, default to 1 (incrementing)
+                const squareCount = (p.count !== undefined) ? parseInt(p.count) : 1;
+                
+                // Add to existing total for this name
+                counts[name] = (counts[name] || 0) + squareCount;
             }
         });
     }
