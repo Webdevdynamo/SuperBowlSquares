@@ -298,10 +298,12 @@ function updateWinnersAndPayouts(away, home, status) {
 
     let liveWinner = "TBD"; 
     console.log(status);
-    if ((gameActive || someoneScored) && status != "Final") {
-        liveWinner = squareOwners[`${away.total % 10}-${home.total % 10}`] || "Unclaimed";
-    } else {
-        liveWinner = "Game hasn't started";
+    if(status != "Final"){
+        if (gameActive || someoneScored) {
+            liveWinner = squareOwners[`${away.total % 10}-${home.total % 10}`] || "Unclaimed";
+        } else {
+            liveWinner = "Game hasn't started";
+        }
     }
 
     // 4. Update the Sidebar
