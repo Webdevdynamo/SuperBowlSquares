@@ -95,8 +95,8 @@ body {
 /* Reverted to the Red Badge Look */
 .q-badge {
     position: absolute;
-    width: 18px;
-    height: 18px;
+    width: 15px;
+    height: 11px;
     background: #d32f2f; /* That classic vibrant red */
     color: #ffffff;      /* White text for contrast */
     font-size: 10px;
