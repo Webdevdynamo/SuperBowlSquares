@@ -39,26 +39,37 @@ function toggleSwipeHint() {
  */
 async function init() {
     try {
+        // 1. Fetch the initial data and WAIT for it
         const res = await fetch(`api_proxy.php?id=${currentMatchId}`);
         const data = await res.json();
         
-        // GRACEFUL FAIL: Ensure we have at least empty objects to work with
         if (data.squares) {
             squareOwners = data.squares.grid ?? {};
             allParticipants = data.squares.participants ?? [];
+            PAYOUT_VALS = data.settings.payouts ?? { q1: 0, q2: 0, q3: 0, final: 0 };
         }
 
-        // We must draw the grid even if data is missing
+        // 2. Render the physical grid
         renderStaticGrid();
-        // Check hint status on load
-        setTimeout(toggleSwipeHint, 100);
 
-        // Continue with the rest of the UI update
-        updateScore();
+        // 3. Process the first score update immediately using the data we just got
+        // This ensures the leaderboard and highlight populate on frame 1
+        const away = data.teams.find(t => t.homeAway === "Away");
+        const home = data.teams.find(t => t.homeAway === "Home");
+
+        if (away && home) {
+            updateLabels(data.settings.title, away, home, data.settings.startTime, data.status, data.settings.payouts);
+            updateBoxScore(away, home);
+            updateWinnersAndPayouts(away, home, data.status);
+            highlightWinner(away.total, home.total, data.status);
+        }
+
+        // 4. Start the 60-second background polling
         setInterval(updateScore, 60000);
+
     } catch (err) {
-        console.error("Initial load failed. Rendering empty grid.", err);
-        renderStaticGrid(); // Draw empty grid as fallback
+        console.error("Initial load failed.", err);
+        renderStaticGrid(); 
     }
 }
 
@@ -132,9 +143,9 @@ async function updateScore() {
         window.requestAnimationFrame(() => {
             updateLabels(data.settings.title, away, home, data.settings.startTime, data.status, data.settings.payouts);
             updateBoxScore(away, home);
-            updateWinnersAndPayouts(away, home);
-
-            highlightWinner(away.total, home.total);
+            // Add 'data.status' as the third argument here
+            updateWinnersAndPayouts(away, home, data.status); 
+            highlightWinner(away.total, home.total, data.status);
         });
 
     } catch (err) {
