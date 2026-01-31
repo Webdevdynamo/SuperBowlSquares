@@ -356,14 +356,18 @@ function renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted) {
 
     // Get unique names, sort them, and build the rows
     const sortedNames = Object.keys(counts).sort((a, b) => a.localeCompare(b));
-    console.log(sortedNames);
 
     if (sortedNames.length === 0) {
         html += `<div class="participant-row" style="color:#666; font-style:italic;">No squares claimed yet.</div>`;
     } else {
         sortedNames.forEach(name => {
+           // Escape single quotes for the JS function call
+            const safeName = name.replace(/'/g, "\\'");
             html += `
-                <div class="participant-row">
+                <div class="participant-row" 
+                    onmouseover="highlightUserSquares('${safeName}')" 
+                    onmouseout="clearUserHighlights()"
+                    style="cursor: pointer;">
                     <span class="p-name">${name}</span>
                     <span class="p-count">${counts[name]} sq</span>
                 </div>`;
@@ -383,6 +387,25 @@ function createSquare(text, className, container) {
     div.innerText = text;
     container.appendChild(div);
     return div;
+}
+function highlightUserSquares(name) {
+    document.querySelectorAll('.square').forEach(sq => {
+        if (sq.getAttribute('data-owner') === name) {
+            sq.classList.add('user-highlight');
+        } else {
+            sq.style.opacity = '0.3'; // Dim other squares to make yours pop
+        }
+    });
+}
+
+/**
+ * Removes the temporary highlights
+ */
+function clearUserHighlights() {
+    document.querySelectorAll('.square').forEach(sq => {
+        sq.classList.remove('user-highlight');
+        sq.style.opacity = '1';
+    });
 }
 
 function stringToColor(str) {
