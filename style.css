@@ -338,3 +338,21 @@ body {
 .leader-card .label { font-size: 0.7rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
 .leader-card .name { font-size: 1.1rem; font-weight: bold; margin: 2px 0; }
 .leader-card .amount { font-size: 0.9rem; color: #ffca28; font-family: monospace; }
+
+.participant-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.95rem;
+    color: #eee;
+}
+
+.p-count {
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+    color: #aaa;
+}

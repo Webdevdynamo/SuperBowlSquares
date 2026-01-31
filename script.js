@@ -309,7 +309,7 @@ function renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted) {
     const payoutKeys = ['q1', 'q2', 'q3', 'final'];
 
     winnersByQuarter.forEach((winner, i) => {
-        if (winner) {
+        if (winner && winner !== "Unclaimed") {
             html += `
                 <div class="leader-card winner-payout">
                     <span class="label">${labels[i]}</span>
@@ -321,11 +321,29 @@ function renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted) {
 
     html += `</div><hr><div class="sidebar-section"><h3>👥 All Participants</h3>`;
     
-    // C. Alphabetical List of All Players
-    const uniqueParticipants = [...new Set(allParticipants)].sort();
-    uniqueParticipants.forEach(p => {
-        html += `<div class="participant-row">${p}</div>`;
+    // C. Logic Fix: Filter out empty strings, count squares, and sort
+    // We create an object to count occurrences: { "Dominic": 5, "Kelly": 3 }
+    const counts = {};
+    allParticipants.forEach(p => {
+        if (p && p.trim() !== "") {
+            counts[p] = (counts[p] || 0) + 1;
+        }
     });
+
+    // Get unique names, sort them, and build the rows
+    const sortedNames = Object.keys(counts).sort((a, b) => a.localeCompare(b));
+
+    if (sortedNames.length === 0) {
+        html += `<div class="participant-row" style="color:#666; font-style:italic;">No squares claimed yet.</div>`;
+    } else {
+        sortedNames.forEach(name => {
+            html += `
+                <div class="participant-row">
+                    <span class="p-name">${name}</span>
+                    <span class="p-count">${counts[name]} sq</span>
+                </div>`;
+        });
+    }
 
     html += `</div>`;
     sidebar.innerHTML = html;
