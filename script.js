@@ -338,6 +338,7 @@ function renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted) {
     // C. Logic Fix: Filter out empty strings, count squares, and sort
     // We create an object to count occurrences: { "Dominic": 5, "Kelly": 3 }
     const counts = {};
+    console.log(allParticipants);
     if (Array.isArray(allParticipants)) {
         allParticipants.forEach(p => {
             // THE FIX: Check if p is a string before calling .trim()
