@@ -362,31 +362,36 @@ function stringToColor(str) {
 
 let lastKnownScore = { away: -1, home: -1 };
 
-function highlightWinner(awayScore, homeScore) {
+function highlightWinner(awayScore, homeScore, status) {
+    // 1. If the game hasn't started and the score is 0-0, don't highlight yet
+    const gameStarted = (status === "In-Progress" || status === "Live" || status === "Final");
+    const someoneScored = (awayScore > 0 || homeScore > 0);
+
+    if (!gameStarted && !someoneScored) {
+        // Remove any existing highlights and exit
+        document.querySelectorAll('.square').forEach(el => el.classList.remove('winning-now'));
+        return;
+    }
+
     const awayDigit = awayScore % 10;
     const homeDigit = homeScore % 10;
     const winningId = `sq-${awayDigit}-${homeDigit}`;
 
-    // 1. Remove old highlights
+    // 2. Clear old and apply new highlight
     document.querySelectorAll('.square').forEach(el => el.classList.remove('winning-now'));
-
-    // 2. Add highlight to the current winner
+    
     const winner = document.getElementById(winningId);
     if (winner) {
         winner.classList.add('winning-now');
 
-        // 3. THE FIX: Only celebrate if it's NOT the first time we've seen a score
+        // 3. Celebration Check
         const isFirstLoad = (lastKnownScore.away === -1);
         const scoreChanged = (awayScore !== lastKnownScore.away || homeScore !== lastKnownScore.home);
 
         if (scoreChanged) {
-            // Only trigger the flash/scroll if this isn't the initial page load
             if (!isFirstLoad) {
-                console.log("🔥 Score Update! Triggering celebration.");
                 triggerCelebration(winner);
             }
-            
-            // Always update the tracker so the NEXT change is detected correctly
             lastKnownScore = { away: awayScore, home: homeScore };
         }
     }
