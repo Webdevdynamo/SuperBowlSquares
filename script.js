@@ -348,6 +348,7 @@ function renderPayoutLeaderboard(winnersByQuarter, liveWinner, isGameStarted) {
         });
     }
 
+    console.log(counts);
     // Get unique names, sort them, and build the rows
     const sortedNames = Object.keys(counts).sort((a, b) => a.localeCompare(b));
     console.log(sortedNames);
