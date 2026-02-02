@@ -58,7 +58,7 @@ body {
     overflow-x: auto;
     background: #fff;
     padding: 10px;
-    border-radius: 8px;
+    /* border-radius: 8px; */
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);flex: 1; 
     /* Grows to fill available space */
     width: 100%; /* Ensures it respects the parent container's width */
@@ -92,18 +92,30 @@ body {
 .label { background: #222; color: #fff; font-weight: bold; }
 
 /* --- Winners & Badges --- */
+/* Reverted to the Red Badge Look */
 .q-badge {
     position: absolute;
-    top: 0; right: 0;
-    background: var(--accent-red);
-    color: white;
-    font-size: 0.5rem;
-    padding: 1px 3px;
-    border-radius: 0 0 0 4px;
-    font-weight: bold;
-    pointer-events: none;
-    z-index: 10;
+    width: 15px;
+    height: 11px;
+    background: #d32f2f; /* That classic vibrant red */
+    color: #ffffff;      /* White text for contrast */
+    font-size: 10px;
+    font-weight: 900;    /* Extra bold for readability */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;  /* Slightly rounded corners for a "tag" look */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    z-index: 5;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    pointer-events: none; /* Ensures the badge doesn't interfere with clicks */
 }
+
+/* Corner Specific Positions */
+.q-badge.q1 { top: 0px; left: 0px; }
+.q-badge.q2 { top: 0px; right: 0px; }
+.q-badge.q3 { bottom: 0px; left: 0px; }
+.q-badge.q4 { bottom: 0px; right: 0px; background: #b71c1c;}
 
 .active-winner {
     background-color: var(--winner-gold) !important;
@@ -138,7 +150,7 @@ body {
 }
 
 /* --- Sidebar Payouts --- */
-.sidebar { background: #fff; color: #000; padding: 15px; border-radius: 12px; }
+.sidebar { background: #fff; padding: 15px; border-radius: 12px; }
 .sidebar h3 { margin-top: 0; border-bottom: 2px solid #333; padding-bottom: 5px; }
 .payout-item { 
     display: flex; justify-content: space-between; 
@@ -293,4 +305,110 @@ body {
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+/* The Pulse Effect */
+.winning-now {
+    outline: 4px solid #ffca28;
+    outline-offset: -4px;
+    box-shadow: 0 0 20px #ffca28;
+    z-index: 10;
+    transform: scale(1.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Optional: Score Change Flash */
+.score-changed {
+    animation: scoreFlash 1s ease-out;
+}
+
+@keyframes scoreFlash {
+    0% { background-color: rgba(255, 202, 40, 0.8); }
+    100% { background-color: transparent; }
+}
+
+.leader-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    border-left: 4px solid #444;
+}
+
+.current-winner {
+    background: rgba(255, 202, 40, 0.1);
+    border-left-color: #ffca28;
+    box-shadow: 0 0 15px rgba(255, 202, 40, 0.1);
+}
+
+.winner-payout {
+    border-left-color: #4caf50; /* Green for confirmed wins */
+}
+
+.leader-card .label { font-size: 0.7rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+.leader-card .name { font-size: 1.1rem; font-weight: bold; margin: 2px 0; }
+.leader-card .amount { font-size: 0.9rem; color: #ffca28; font-family: monospace; }
+
+.participant-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.95rem;
+    color: #eee;
+}
+
+.p-count {
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+    color: #aaa;
+}
+
+.sidebar {
+    background: var(--header-bg);
+    padding: 20px;
+    border-radius: 8px;
+    min-width: 280px;
+    max-width: 734px;
+    /* align-self: flex-start; */
+    position: sticky;
+    top: 20px;
+}
+
+.sidebar h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 8px;
+    color: #ffca28;
+}
+
+.sidebar-section {
+    margin-bottom: 25px;
+}
+
+.sidebar hr {
+    border: 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin: 20px 0;
+}
+
+.user-highlight {
+    outline: 3px solid #fff !important;
+    outline-offset: -3px;
+    z-index: 5;
+    transform: scale(1.05);
+    opacity: 1 !important;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+}
+
+.participant-row:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffca28;
 }

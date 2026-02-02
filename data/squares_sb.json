@@ -1,5 +1,45 @@
 {
-    "game_id": "SportRadar_Football_NFL_2025_Game_5848514c-3977-4aa3-9db0-94ed5d0ebb34_BAK",
-    "participants": [],
-    "grid": {}
+  "game_id": "SportRadar_Football_NFL_2025_Game_5848514c-3977-4aa3-9db0-94ed5d0ebb34",
+  "participants": [
+    { "name": "Landon", "count": 11 },
+    { "name": "Amber", "count": 3 },
+    { "name": "Dominic", "count": 10 },
+    { "name": "Norman", "count": 5 },
+    { "name": "Joe", "count": 13 },
+    { "name": "Ryan", "count": 7 },
+    { "name": "Danny", "count": 10 },
+    { "name": "Mike", "count": 6 },
+    { "name": "Shawri", "count": 5 },
+    { "name": "Larry", "count": 7 },
+    { "name": "Jesse", "count": 6 },
+    { "name": "Brandon", "count": 5 },
+    { "name": "Kai", "count": 3 },
+    { "name": "Julie", "count": 2 },
+    { "name": "Mel", "count": 1 },
+    { "name": "Alicia", "count": 2 },
+    { "name": "Martina", "count": 1 },
+    { "name": "Helena", "count": 1 },
+    { "name": "Kristy", "count": 2 }
+  ],
+  "grid": {
+    "1-3": "Landon", "8-1": "Landon", "3-6": "Landon", "0-2": "Landon", "0-7": "Landon", "2-5": "Landon", "7-7": "Landon", "6-6": "Landon", "5-4": "Landon", "9-7": "Landon", "9-3": "Landon",
+    "1-5": "Amber", "3-8": "Amber", "5-2": "Amber",
+    "1-6": "Dominic", "8-0": "Dominic", "4-1": "Dominic", "0-5": "Dominic", "3-4": "Dominic", "2-9": "Dominic", "7-0": "Dominic", "6-8": "Dominic", "5-3": "Dominic", "9-2": "Dominic",
+    "1-4": "Norman", "0-0": "Norman", "2-3": "Norman", "7-5": "Norman", "5-7": "Norman",
+    "1-1": "Joe", "8-9": "Joe", "8-3": "Joe", "4-3": "Joe", "0-4": "Joe", "3-7": "Joe", "2-6": "Joe", "7-8": "Joe", "6-2": "Joe", "5-5": "Joe", "9-4": "Joe", "9-0": "Joe", "9-9": "Joe",
+    "1-2": "Ryan", "4-6": "Ryan", "4-7": "Ryan", "3-1": "Ryan", "3-0": "Ryan", "2-8": "Ryan", "6-7": "Ryan",
+    "1-0": "Danny", "8-5": "Danny", "4-9": "Danny", "0-8": "Danny", "3-3": "Danny", "2-7": "Danny", "7-2": "Danny", "6-4": "Danny", "5-6": "Danny", "9-1": "Danny",
+    "1-7": "Mike", "4-0": "Mike", "0-3": "Mike", "5-8": "Mike", "5-9": "Mike", "2-4": "Mike",
+    "1-9": "Shawri", "4-5": "Shawri", "2-1": "Shawri", "6-3": "Shawri", "9-6": "Shawri",
+    "1-8": "Larry", "8-4": "Larry", "3-2": "Larry", "7-6": "Larry", "6-9": "Larry", "9-5": "Larry", "9-8": "Larry",
+    "8-6": "Jesse", "8-2": "Jesse", "4-8": "Jesse", "3-9": "Jesse", "6-5": "Jesse", "5-1": "Jesse",
+    "8-7": "Brandon", "8-8": "Brandon", "0-1": "Brandon", "7-4": "Brandon", "7-3": "Brandon",
+    "4-4": "Kai", "0-9": "Kai", "2-0": "Kai",
+    "4-2": "Julie", "6-0": "Julie",
+    "0-6": "Mel",
+    "3-5": "Alicia", "6-1": "Alicia",
+    "2-2": "Martina",
+    "7-1": "Helena",
+    "7-9": "Kristy", "5-0": "Kristy"
+  }
 }

@@ -39,26 +39,37 @@ function toggleSwipeHint() {
  */
 async function init() {
     try {
+        // 1. Fetch the initial data and WAIT for it
         const res = await fetch(`api_proxy.php?id=${currentMatchId}`);
         const data = await res.json();
         
-        // GRACEFUL FAIL: Ensure we have at least empty objects to work with
         if (data.squares) {
             squareOwners = data.squares.grid ?? {};
             allParticipants = data.squares.participants ?? [];
+            PAYOUT_VALS = data.settings.payouts ?? { q1: 0, q2: 0, q3: 0, final: 0 };
         }
 
-        // We must draw the grid even if data is missing
+        // 2. Render the physical grid
         renderStaticGrid();
-        // Check hint status on load
-        setTimeout(toggleSwipeHint, 100);
 
-        // Continue with the rest of the UI update
-        updateScore();
+        // 3. Process the first score update immediately using the data we just got
+        // This ensures the leaderboard and highlight populate on frame 1
+        const away = data.teams.find(t => t.homeAway === "Away");
+        const home = data.teams.find(t => t.homeAway === "Home");
+
+        if (away && home) {
+            updateLabels(data.settings.title, away, home, data.settings.startTime, data.status, data.settings.payouts);
+            updateBoxScore(away, home);
+            updateWinnersAndPayouts(away, home, data.status);
+            highlightWinner(away.total, home.total, data.status);
+        }
+
+        // 4. Start the 60-second background polling
         setInterval(updateScore, 60000);
+
     } catch (err) {
-        console.error("Initial load failed. Rendering empty grid.", err);
-        renderStaticGrid(); // Draw empty grid as fallback
+        console.error("Initial load failed.", err);
+        renderStaticGrid(); 
     }
 }
 
@@ -132,7 +143,9 @@ async function updateScore() {
         window.requestAnimationFrame(() => {
             updateLabels(data.settings.title, away, home, data.settings.startTime, data.status, data.settings.payouts);
             updateBoxScore(away, home);
-            updateWinnersAndPayouts(away, home);
+            // Add 'data.status' as the third argument here
+            updateWinnersAndPayouts(away, home, data.status); 
+            highlightWinner(away.total, home.total, data.status);
         });
 
     } catch (err) {
@@ -226,7 +239,7 @@ function updateBoxScore(away, home) {
  * Handles Real-Time Grid Highlighting and Payout Calculation
  */
 function updateWinnersAndPayouts(away, home, status) {
-    const winners = [];
+    const winnersByQuarter = [null, null, null, null]; // To store specific Q winners
     
     // 1. Reset current grid visual state
     document.querySelectorAll('.square').forEach(s => {
@@ -236,50 +249,67 @@ function updateWinnersAndPayouts(away, home, status) {
         s.innerText = s.getAttribute('data-owner') || ''; 
     });
 
-    // 2. Define the game state
     const isGameStarted = (status !== "Scheduled" && status !== "Pre-Game");
     const isGameOver = (status === "Final" || status === "Completed");
 
-    // 3. Loop through 4 Quarters
+    // 2. Track Quarters
     for (let i = 0; i < 4; i++) {
         const awayQScore = away.quarters[i];
         const homeQScore = home.quarters[i];
         const combinedScore = awayQScore + homeQScore;
 
-        // LOGIC: A quarter only has a "winner" if:
-        // A) The combined score for that quarter is > 0
-        // B) OR the game is completely over (handles 0-0 Final ties, though rare)
         if (isGameStarted && (combinedScore > 0 || isGameOver)) {
-            
             const aDigit = awayQScore % 10;
             const hDigit = homeQScore % 10;
-            const winnerName = squareOwners[`${aDigit}-${hDigit}`];
+            const winnerName = squareOwners[`${aDigit}-${hDigit}`] || "Unclaimed";
             
-            // Only add the marker if this is the CURRENT quarter being played
-            // or if it's a finished quarter.
-            // We determine "Current Quarter" by finding the highest 'i' where a score exists.
-            const latestQuarterWithScore = away.quarters.findLastIndex(q => q > 0) || 0;
+            // Determine "Current Quarter" index
+            const latestQuarterIdx = away.quarters.findLastIndex(q => q > 0);
 
-            if (i <= latestQuarterWithScore || isGameOver) {
-                winners.push(winnerName);
+            if (i <= latestQuarterIdx || isGameOver) {
+                winnersByQuarter[i] = winnerName; // Store for the leaderboard
 
                 const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
                 if (el) {
-                    // Mark as Active if it's the latest quarter or Final. 
-                    // Otherwise mark as Past.
-                    const isLatest = (i === latestQuarterWithScore) || isGameOver;
+                    const isLatest = (i === latestQuarterIdx) || isGameOver;
                     el.classList.add(isLatest ? 'active-winner' : 'past-winner');
                     
-                    const badge = document.createElement('span');
-                    badge.className = 'q-badge';
-                    badge.innerText = (i === 3) ? 'F' : `Q${i+1}`;
-                    el.appendChild(badge);
+                    // THE FIX: Check if THIS specific quarter badge already exists
+                    // This prevents badges from piling up on every 60-second refresh
+                    const badgeClass = `q${i + 1}`;
+                    if (!el.querySelector(`.${badgeClass}`)) {
+                        const badge = document.createElement('span');
+                        
+                        // Apply the base style AND the corner-specific class (q1, q2, q3, or q4)
+                        badge.className = `q-badge ${badgeClass}`;
+                        
+                        badge.innerText = (i === 3) ? 'F' : `Q${i + 1}`;
+                        el.appendChild(badge);
+                    }
                 }
             }
         }
     }
 
-    renderPayoutLeaderboard(winners);
+    // --- 3. Determine the actual LIVE leader ---
+    // Logic: Only identify a winner if the game is Live/Final OR if someone has actually scored.
+    const someoneScored = (away.total > 0 || home.total > 0);
+    const gameActive = (status === "In-Progress" || status === "Live" || status === "Final" || status === "Completed");
+    const isCurrentlyLive = (status === "In-Progress" || status === "Live");
+
+    let liveWinner = "TBD"; 
+    let showLiveCard = false;
+    if (isCurrentlyLive) {
+        liveWinner = squareOwners[`${away.total % 10}-${home.total % 10}`] || "Unclaimed";
+        showLiveCard = true;
+    } else if (!isGameOver && someoneScored) {
+        // This handles edge cases where the status might lag but points are on the board
+        liveWinner = squareOwners[`${away.total % 10}-${home.total % 10}`] || "Unclaimed";
+        showLiveCard = true;
+    }
+
+    // 4. Update the Sidebar
+    renderPayoutLeaderboard(winnersByQuarter, liveWinner, showLiveCard);
 }
 
 function getCurrentQuarterIndex(away, home) {
@@ -291,39 +321,83 @@ function getCurrentQuarterIndex(away, home) {
 /**
  * Renders the combined Participant List + Earnings
  */
-function renderPayoutLeaderboard(winners) {
-    const container = document.getElementById('payout-list');
-    if (!container) return;
-
-    // GRACEFUL FAIL: Handle empty participant list
-    if (allParticipants.length === 0) {
-        container.innerHTML = `<div class="payout-item"><em>No participants assigned yet.</em></div>`;
+function renderPayoutLeaderboard(winnersByQuarter, liveWinner, showLiveWinner) {
+    const sidebar = document.getElementById('participants-list'); // Matches the HTML ID
+    if (!sidebar) {
+        console.error("Sidebar container 'participants-list' not found in HTML!");
         return;
     }
 
-    const earnings = {};
-    winners.forEach((name, i) => {
-        if (!name) return;
-        earnings[name] = (earnings[name] || 0) + (PAYOUT_VALS[PAYOUT_KEYS[i]] ?? 0);
-    });
+    let html = `<div class="sidebar-section"><h3>🏆 Leaderboard</h3>`;
 
-    const sortedList = [...allParticipants].sort((a, b) => {
-        const earnA = earnings[a.name] || 0;
-        const earnB = earnings[b.name] || 0;
-        return earnB - earnA || b.count - a.count;
-    });
-
-    container.innerHTML = sortedList.map(p => {
-        const earned = earnings[p.name] || 0;
-        return `
-            <div class="participant-row ${earned > 0 ? 'has-earnings' : ''}">
-                <div class="p-info">
-                    <span class="p-name">${p.name}</span>
-                    <span class="p-count">${p.count} Squares</span>
-                </div>
-                <div class="p-payout">${earned > 0 ? `$${earned}` : '--'}</div>
+    // A. Current Winning Square
+    if (showLiveWinner) {
+        html += `
+            <div class="leader-card current-winner">
+                <span class="label">Winning Now</span>
+                <span class="name">${liveWinner}</span>
+                <span class="amount">Est. $${PAYOUT_VALS.final}</span>
             </div>`;
-    }).join('');
+    }
+
+    // B. Past Payouts
+    const labels = ['Q1 Winner', 'Q2 Winner', 'Q3 Winner', 'Final Winner'];
+    const payoutKeys = ['q1', 'q2', 'q3', 'final'];
+
+    winnersByQuarter.forEach((winner, i) => {
+        if (winner && winner !== "Unclaimed") {
+            html += `
+                <div class="leader-card winner-payout">
+                    <span class="label">${labels[i]}</span>
+                    <span class="name">${winner}</span>
+                    <span class="amount">$${PAYOUT_VALS[payoutKeys[i]]}</span>
+                </div>`;
+        }
+    });
+
+    html += `</div><hr><div class="sidebar-section"><h3>👥 All Participants</h3>`;
+    
+    // C. Logic Fix: Filter out empty strings, count squares, and sort
+    // We create an object to count occurrences: { "Dominic": 5, "Kelly": 3 }
+    const counts = {};
+    if (Array.isArray(allParticipants)) {
+        allParticipants.forEach(p => {
+            // Ensure p exists and has a valid name
+            if (p && typeof p.name === 'string' && p.name.trim() !== "") {
+                const name = p.name.trim();
+                
+                // If the object has a .count property, use it; 
+                // otherwise, default to 1 (incrementing)
+                const squareCount = (p.count !== undefined) ? parseInt(p.count) : 1;
+                
+                // Add to existing total for this name
+                counts[name] = (counts[name] || 0) + squareCount;
+            }
+        });
+    }
+
+    // Get unique names, sort them, and build the rows
+    const sortedNames = Object.keys(counts).sort((a, b) => a.localeCompare(b));
+
+    if (sortedNames.length === 0) {
+        html += `<div class="participant-row" style="color:#666; font-style:italic;">No squares claimed yet.</div>`;
+    } else {
+        sortedNames.forEach(name => {
+           // Escape single quotes for the JS function call
+            const safeName = name.replace(/'/g, "\\'");
+            html += `
+                <div class="participant-row" 
+                    onmouseover="highlightUserSquares('${safeName}')" 
+                    onmouseout="clearUserHighlights()"
+                    style="cursor: pointer;">
+                    <span class="p-name">${name}</span>
+                    <span class="p-count">${counts[name]} sq</span>
+                </div>`;
+        });
+    }
+
+    html += `</div>`;
+    sidebar.innerHTML = html;
 }
 
 /**
@@ -335,6 +409,25 @@ function createSquare(text, className, container) {
     div.innerText = text;
     container.appendChild(div);
     return div;
+}
+function highlightUserSquares(name) {
+    document.querySelectorAll('.square').forEach(sq => {
+        if (sq.getAttribute('data-owner') === name) {
+            sq.classList.add('user-highlight');
+        } else {
+            sq.style.opacity = '0.3'; // Dim other squares to make yours pop
+        }
+    });
+}
+
+/**
+ * Removes the temporary highlights
+ */
+function clearUserHighlights() {
+    document.querySelectorAll('.square').forEach(sq => {
+        sq.classList.remove('user-highlight');
+        sq.style.opacity = '1';
+    });
 }
 
 function stringToColor(str) {
@@ -357,6 +450,62 @@ function stringToColor(str) {
 
     return `hsl(${h}, ${s}%, ${l}%)`;
 }
+
+let lastKnownScore = { away: -1, home: -1 };
+
+function highlightWinner(awayScore, homeScore, status) {
+    // 1. If the game hasn't started and the score is 0-0, don't highlight yet
+    const gameStarted = (status === "In-Progress" || status === "Live" || status === "Final");
+    const someoneScored = (awayScore > 0 || homeScore > 0);
+
+    if (!gameStarted && !someoneScored) {
+        // Remove any existing highlights and exit
+        document.querySelectorAll('.square').forEach(el => el.classList.remove('winning-now'));
+        return;
+    }
+
+    const awayDigit = awayScore % 10;
+    const homeDigit = homeScore % 10;
+    const winningId = `sq-${awayDigit}-${homeDigit}`;
+
+    // 2. Clear old and apply new highlight
+    document.querySelectorAll('.square').forEach(el => el.classList.remove('winning-now'));
+    
+    const winner = document.getElementById(winningId);
+    if (winner) {
+        winner.classList.add('winning-now');
+
+        // 3. Celebration Check
+        const isFirstLoad = (lastKnownScore.away === -1);
+        const scoreChanged = (awayScore !== lastKnownScore.away || homeScore !== lastKnownScore.home);
+
+        if (scoreChanged) {
+            if (!isFirstLoad) {
+                triggerCelebration(winner);
+            }
+            lastKnownScore = { away: awayScore, home: homeScore };
+        }
+    }
+}
+
+function triggerCelebration(element) {
+    // Flash the header or the square
+    document.body.classList.add('score-changed');
+    setTimeout(() => document.body.classList.remove('score-changed'), 1000);
+    
+    // You could add a sound effect here: 
+    // new Audio('assets/stadium-horn.mp3').play();
+}
+
+window.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 's') {
+        console.log("DEBUG: Simulating score change...");
+        // Randomly simulate a score for testing
+        const testAway = Math.floor(Math.random() * 30);
+        const testHome = Math.floor(Math.random() * 30);
+        highlightWinner(testAway, testHome);
+    }
+});
 
 // Kick off the app
 init();
