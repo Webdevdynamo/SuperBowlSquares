@@ -134,7 +134,7 @@ body {
 
 /* --- Axis Labels --- */
 .top-label { 
-    background: #222; padding: 10px; display: flex; 
+    background: #222; padding: 10px; display: flex;  
     flex-direction: column; align-items: center; gap: 5px; 
 }
 .left-label { padding: 10px; display: flex; flex-direction: column; align-items: center; }
