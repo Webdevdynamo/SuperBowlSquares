@@ -237,7 +237,7 @@ body {
     color: white;
     padding-top: 55px; /* Matches the height of the top digit-label row */
     z-index: 10;
-}
+} 
 
 /* The Scrollable Squares */
 .scroll-container {
