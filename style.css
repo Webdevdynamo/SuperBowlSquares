@@ -132,6 +132,12 @@ body {
     100% { transform: scale(1); }
 }
 
+.grid-section{
+    border-radius: 12px;
+    margin-bottom: 20px;
+    background: #1f1f1f;
+}
+
 /* --- Axis Labels --- */
 .top-label { 
     background: #222; padding: 10px; display: flex;  
