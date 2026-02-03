@@ -134,7 +134,7 @@ body {
 
 /* --- Axis Labels --- */
 .top-label { 
-    padding: 10px; display: flex; 
+    background: #222; padding: 10px; display: flex; 
     flex-direction: column; align-items: center; gap: 5px; 
 }
 .left-label { padding: 10px; display: flex; flex-direction: column; align-items: center; }
@@ -237,7 +237,7 @@ body {
     color: white;
     padding-top: 55px; /* Matches the height of the top digit-label row */
     z-index: 10;
-} 
+}
 
 /* The Scrollable Squares */
 .scroll-container {
