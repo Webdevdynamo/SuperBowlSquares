@@ -198,9 +198,12 @@ function updateLabels(title, away, home, startTime, status, payouts) {
     // 2. Update Logos (Using %20 instead of encoding to avoid + signs)
     if (topLabel && away) {
         const awayLogo = `${logoBase}${away.fullName.replace(/ /g, '%20')} Logo.png`;
+        // NEW: Logo and text in a horizontal row
         topLabel.innerHTML = `
-            <img src="${awayLogo}" class="axis-logo">
-            <div class="label-text">${away.fullName.toUpperCase()}</div>
+            <div class="top-label-inner">
+                <img src="${awayLogo}" class="axis-logo">
+                <div class="label-text">${away.fullName.toUpperCase()}</div>
+            </div>
         `;
     }
 

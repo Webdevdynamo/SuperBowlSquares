@@ -142,9 +142,33 @@ body {
 
 /* --- Axis Labels --- */
 .top-label { 
-    padding: 10px; display: flex;  
-    flex-direction: column; align-items: center; gap: 5px; 
-    margin-left: 80px;
+    background: #222; 
+    padding: 10px; 
+    display: flex; 
+    justify-content: center; /* Centers the content horizontally */
+    align-items: center; 
+}
+
+/* New inner wrapper to keep logo and text tight together */
+.top-label-inner {
+    display: flex;
+    flex-direction: row; /* Horizontal alignment */
+    align-items: center;
+    gap: 12px; /* Space between logo and name */
+}
+
+.top-label .axis-logo { 
+    width: 32px; /* Slightly smaller for a cleaner horizontal look */
+    height: 32px; 
+    object-fit: contain; 
+}
+
+.top-label .label-text { 
+    font-size: 0.85rem; 
+    font-weight: bold; 
+    color: #fff; 
+    letter-spacing: 1px;
+    white-space: nowrap; /* Prevents name from wrapping to a second line */
 }
 .left-label { padding: 10px; display: flex; flex-direction: column; align-items: center; }
 .axis-logo { width: 40px; height: 40px; object-fit: contain; }
