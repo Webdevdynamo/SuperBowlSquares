@@ -158,8 +158,8 @@ body {
 }
 
 .top-label .axis-logo { 
-    width: 32px; /* Slightly smaller for a cleaner horizontal look */
-    height: 32px; 
+    width: 40px; /* Slightly smaller for a cleaner horizontal look */
+    height: 40px; 
     object-fit: contain; 
 }
 
