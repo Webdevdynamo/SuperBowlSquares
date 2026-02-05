@@ -84,33 +84,47 @@ function formatGameTime($timeInput) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="./images/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Football Squares Lobby</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body style="background: #121212; color: white;">
-    <div class="lobby-container" style="max-width: 800px; margin: 40px auto; padding: 0 20px;">
-        <header style="text-align: center; margin-bottom: 40px;">
-            <h1>🏈 Football Square Pools</h1>
-            <p>Select a game to monitor live scores</p>
+<body style="background: #121212; color: white; margin: 0; padding: 0;">
+    <div class="lobby-container">
+        <header class="lobby-header">
+            <div class="lobby-icon">🏈</div>
+            <h1>Football Square Pools</h1>
+            <p>Select a game to monitor live scores & winners</p>
         </header>
 
-        <?php if (empty($config['active_matches'])): ?>
-            <p style="text-align:center;">No active matches found. Check the Admin panel.</p>
-        <?php else: ?>
-            <?php foreach ($config['active_matches'] as $match): ?>
-                <a href="index.php?id=<?= $match['id'] ?>" class="match-card" style="text-decoration: none; color: inherit;">
-                    <div class="match-info">
-                        <h2><?= $match['title'] ?></h2>
-                        <div class="match-meta" style="color:#888; font-size: 0.9rem;">
-                            <span class="game-time">📅 <?= formatGameTime($match['startTime'] ?? '') ?></span> | $<?= $match['cost_per_square'] ?> / square | 
-                            Prize Pool: $<?= array_sum($match['payouts']) ?>
+        <div class="match-list">
+            <?php if (empty($config['active_matches'])): ?>
+                <div class="empty-state">
+                    <p>No active matches found.</p>
+                    <small>Check the Admin panel to activate a grid.</small>
+                </div>
+            <?php else: ?>
+                <?php foreach ($config['active_matches'] as $match): 
+                    $totalPrize = is_array($match['payouts']) ? array_sum($match['payouts']) : 0;
+                ?>
+                    <a href="index.php?id=<?= $match['id'] ?>" class="lobby-card">
+                        <div class="card-body">
+                            <div class="match-details">
+                                <span class="game-date">📅 <?= formatGameTime($match['startTime'] ?? '') ?></span>
+                                <h2><?= $match['title'] ?></h2>
+                                <div class="match-meta-tags">
+                                    <span class="meta-tag">$<?= $match['cost_per_square'] ?> / square</span>
+                                    <span class="meta-tag prize">Pot: $<?= $totalPrize ?></span>
+                                </div>
+                            </div>
+                            <div class="card-arrow">
+                                <span class="view-btn">View Board</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="enter-btn">View Board</div>
-                </a>
-            <?php endforeach; ?>
-        <?php endif; ?>
+                    </a>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
     </div>
 </body>
 </html>

@@ -434,3 +434,117 @@ body {
     transform: scale(1.08);
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
 }
+
+/* --- Lobby Specific Styles --- */
+.lobby-container {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.lobby-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.lobby-icon { font-size: 3rem; margin-bottom: 10px; }
+.lobby-header h1 { margin: 0; font-size: 2rem; letter-spacing: -1px; }
+.lobby-header p { color: #888; margin-top: 5px; }
+
+.match-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.lobby-card {
+    background: #1f1f1f;
+    border: 1px solid #333;
+    border-radius: 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    display: block;
+}
+
+.lobby-card:hover {
+    transform: translateY(-4px);
+    border-color: #ffca28;
+    background: #252525;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.card-body {
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.game-date {
+    display: block;
+    font-size: 0.8rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.match-details h2 {
+    margin: 0 0 12px 0;
+    font-size: 1.4rem;
+    color: #fff;
+}
+
+.match-meta-tags {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.meta-tag {
+    font-size: 0.85rem;
+    color: #aaa;
+    background: rgba(255,255,255,0.05);
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.meta-tag.prize {
+    background: rgba(255, 202, 40, 0.1);
+    color: #ffca28;
+    font-weight: bold;
+    border: 1px solid rgba(255, 202, 40, 0.2);
+}
+
+.view-btn {
+    color: #ffca28;
+    border: 1px solid #ffca28;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+.lobby-card:hover .view-btn {
+    background: #ffca28;
+    color: #000;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255,255,255,0.02);
+    border: 2px dashed #333;
+    border-radius: 16px;
+    color: #555;
+}
+
+@media (max-width: 500px) {
+    .card-body { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .card-arrow { width: 100%; }
+    .view-btn { display: block; text-align: center; }
+}
