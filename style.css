@@ -418,3 +418,19 @@ body {
     background: rgba(255, 255, 255, 0.1);
     color: #ffca28;
 }
+
+.participant-row.active-row {
+    background: rgba(255, 202, 40, 0.2) !important;
+    color: #ffca28 !important;
+    border-left: 3px solid #ffca28;
+    padding-left: 10px;
+}
+
+/* Ensure the user-highlight is very visible */
+.user-highlight {
+    outline: 3px solid #fff !important;
+    outline-offset: -3px;
+    z-index: 10;
+    transform: scale(1.08);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+}
