@@ -409,24 +409,46 @@ function createSquare(text, className, container) {
     container.appendChild(div);
     return div;
 }
-function highlightUserSquares(name) {
+let activeHighlightedUser = null;
+
+/**
+ * Toggles highlights for a specific participant
+ */
+function toggleUserHighlight(name, element) {
+    // 1. If we clicked the same person again, clear everything
+    if (activeHighlightedUser === name) {
+        clearUserHighlights();
+        activeHighlightedUser = null;
+        return;
+    }
+
+    // 2. Set active user and reset other rows
+    activeHighlightedUser = name;
+    document.querySelectorAll('.participant-row').forEach(row => row.classList.remove('active-row'));
+    element.classList.add('active-row');
+
+    // 3. Update Grid
     document.querySelectorAll('.square').forEach(sq => {
         if (sq.getAttribute('data-owner') === name) {
             sq.classList.add('user-highlight');
+            sq.style.opacity = '1';
         } else {
-            sq.style.opacity = '0.3'; // Dim other squares to make yours pop
+            sq.classList.remove('user-highlight');
+            sq.style.opacity = '0.2'; // Dimmer for better focus
         }
     });
 }
 
 /**
- * Removes the temporary highlights
+ * Reset the grid to normal state
  */
 function clearUserHighlights() {
+    document.querySelectorAll('.participant-row').forEach(row => row.classList.remove('active-row'));
     document.querySelectorAll('.square').forEach(sq => {
         sq.classList.remove('user-highlight');
         sq.style.opacity = '1';
     });
+    activeHighlightedUser = null;
 }
 
 function stringToColor(str) {
