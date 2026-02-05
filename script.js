@@ -383,12 +383,11 @@ function renderPayoutLeaderboard(winnersByQuarter, liveWinner, showLiveWinner) {
         html += `<div class="participant-row" style="color:#666; font-style:italic;">No squares claimed yet.</div>`;
     } else {
         sortedNames.forEach(name => {
-           // Escape single quotes for the JS function call
             const safeName = name.replace(/'/g, "\\'");
             html += `
                 <div class="participant-row" 
-                    onmouseover="highlightUserSquares('${safeName}')" 
-                    onmouseout="clearUserHighlights()"
+                    onclick="toggleUserHighlight('${safeName}', this)"
+                    data-name="${safeName}"
                     style="cursor: pointer;">
                     <span class="p-name">${name}</span>
                     <span class="p-count">${counts[name]} sq</span>
