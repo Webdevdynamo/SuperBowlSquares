@@ -267,16 +267,16 @@ function updateWinnersAndPayouts(away, home, status, currentPeriod) {
     const isGameOver = (status === "Final" || status === "Completed");
 
     // 2. Track Quarters
+    console.log(currentPeriod);
     for (let i = 0; i < 4; i++) {
         const awayQScore = away.quarters[i];
         const homeQScore = home.quarters[i];
         
-        // THE SOUND FIX:
-        // A quarter (index 0-3) is only "Done" if the official 
-        // current period is strictly GREATER than that quarter's number.
-        // Index 0 (Q1) is done if currentPeriod > 1.
-        // Index 1 (Q2) is done if currentPeriod > 2, etc.
-        let isThisQuarterDone = (currentPeriod > (i + 1)) || isGameOver;
+        // THE FIX: 
+        // A quarter only has a "Final" winner if that quarter is finished.
+        // We check if the score for the NEXT quarter has started, 
+        // or if the game is completely over.
+        const isThisQuarterDone = (i < 3 && (away.quarters[i+1] > 0 || home.quarters[i+1] > 0)) || isGameOver;
 
         if (isGameStarted && isThisQuarterDone) {
             const aDigit = awayQScore % 10;
@@ -287,7 +287,9 @@ function updateWinnersAndPayouts(away, home, status, currentPeriod) {
 
             const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
             if (el) {
+                // Apply past-winner styling since the quarter is officially locked
                 el.classList.add('past-winner');
+                
                 const badgeClass = `q${i + 1}`;
                 if (!el.querySelector(`.${badgeClass}`)) {
                     const badge = document.createElement('span');
