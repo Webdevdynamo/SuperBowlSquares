@@ -223,19 +223,32 @@ function updateBoxScore(away, home) {
     const tbody = document.getElementById('box-score-body');
     if (!tbody) return;
 
-    tbody.innerHTML = [away, home].map(t => `
-        <tr>
-            <td class="team-cell">
-                <img src="${logoBase}${encodeURIComponent(t.fullName)} Logo.png" class="tiny-logo"> 
-                ${t.shortName}
-            </td>
-            <td>${t.quarters[0]}</td>
-            <td>${t.quarters[1]}</td>
-            <td>${t.quarters[2]}</td>
-            <td>${t.quarters[3]}</td>
-            <td class="final-col"><strong>${t.total}</strong></td>
-        </tr>
-    `).join('');
+    tbody.innerHTML = [away, home].map(t => {
+        // Create an array of quarter displays
+        const quarterDisplays = t.quarters.map((q, i) => {
+            // If the quarter score is the same as the total but it's a later quarter, 
+            // and the team hasn't technically reached that period, show 0.
+            // A simpler way: If the current period from the API is less than this index, show 0.
+            
+            // For now, let's use a "running total" check: 
+            // If this quarter's raw value is 0, show 0.
+            return q > 0 ? q : 0;
+        });
+
+        return `
+            <tr>
+                <td class="team-cell">
+                    <img src="${logoBase}${encodeURIComponent(t.fullName)} Logo.png" class="tiny-logo"> 
+                    ${t.shortName}
+                </td>
+                <td>${quarterDisplays[0]}</td>
+                <td>${quarterDisplays[1]}</td>
+                <td>${quarterDisplays[2]}</td>
+                <td>${quarterDisplays[3]}</td>
+                <td class="final-col"><strong>${t.total}</strong></td>
+            </tr>
+        `;
+    }).join('');
 }
 
 /**
