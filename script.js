@@ -136,6 +136,9 @@ async function updateScore() {
 
         const away = data.teams.find(t => t.homeAway === "Away");
         const home = data.teams.find(t => t.homeAway === "Home");
+        
+        // Inside updateScore()
+        const currentPeriod = parseInt(data.value[0].games[0].currentPlayingPeriod.number);
 
         if (!away || !home) return;
 
@@ -144,7 +147,7 @@ async function updateScore() {
             updateLabels(data.settings.title, away, home, data.settings.startTime, data.status, data.settings.payouts);
             updateBoxScore(away, home);
             // Add 'data.status' as the third argument here
-            updateWinnersAndPayouts(away, home, data.status); 
+            updateWinnersAndPayouts(away, home, data.status,currentPeriod); 
             highlightWinner(away.total, home.total, data.status);
         });
 
@@ -249,7 +252,7 @@ function updateBoxScore(away, home) {
 /**
  * Handles Real-Time Grid Highlighting and Payout Calculation
  */
-function updateWinnersAndPayouts(away, home, status) {
+function updateWinnersAndPayouts(away, home, status, currentPeriod) {
     const winnersByQuarter = [null, null, null, null]; // To store specific Q winners
     
     // 1. Reset current grid visual state
@@ -268,11 +271,12 @@ function updateWinnersAndPayouts(away, home, status) {
         const awayQScore = away.quarters[i];
         const homeQScore = home.quarters[i];
         
-        // THE FIX: 
-        // A quarter only has a "Final" winner if that quarter is finished.
-        // We check if the score for the NEXT quarter has started, 
-        // or if the game is completely over.
-        const isThisQuarterDone = (i < 3 && (away.quarters[i+1] > 0 || home.quarters[i+1] > 0)) || isGameOver;
+        // THE SOUND FIX:
+        // A quarter (index 0-3) is only "Done" if the official 
+        // current period is strictly GREATER than that quarter's number.
+        // Index 0 (Q1) is done if currentPeriod > 1.
+        // Index 1 (Q2) is done if currentPeriod > 2, etc.
+        let isThisQuarterDone = (currentPeriod > (i + 1)) || isGameOver;
 
         if (isGameStarted && isThisQuarterDone) {
             const aDigit = awayQScore % 10;
@@ -283,9 +287,7 @@ function updateWinnersAndPayouts(away, home, status) {
 
             const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
             if (el) {
-                // Apply past-winner styling since the quarter is officially locked
                 el.classList.add('past-winner');
-                
                 const badgeClass = `q${i + 1}`;
                 if (!el.querySelector(`.${badgeClass}`)) {
                     const badge = document.createElement('span');
