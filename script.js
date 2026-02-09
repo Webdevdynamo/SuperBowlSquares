@@ -270,29 +270,36 @@ function updateWinnersAndPayouts(away, home, status, currentPeriod) {
     const isGameOver = (status === "Final" || status === "Completed");
 
     // 2. Track Quarters
-    console.log(currentPeriod);
     for (let i = 0; i < 4; i++) {
         const awayQScore = away.quarters[i];
         const homeQScore = home.quarters[i];
         
-        // THE FIX: 
-        // A quarter only has a "Final" winner if that quarter is finished.
-        // We check if the score for the NEXT quarter has started, 
-        // or if the game is completely over.
-        const isThisQuarterDone = (i < 3 && (away.quarters[i+1] > 0 || home.quarters[i+1] > 0)) || isGameOver;
+        // SOUND LOGIC:
+        // currentPeriod comes from data.period (1, 2, 3, or 4).
+        // A quarter (index i) is officially done if:
+        // - The currentPeriod is strictly GREATER than the quarter being checked.
+        // - OR the game status is Final/Completed.
+        let isThisQuarterDone = (currentPeriod > (i + 1)) || isGameOver;
+
+        // Handle Halftime: If the API status is Halftime, Q1 and Q2 are final.
+        if (status === "Halftime" || status === "HT") {
+            if (i < 2) isThisQuarterDone = true;
+        }
 
         if (isGameStarted && isThisQuarterDone) {
             const aDigit = awayQScore % 10;
             const hDigit = homeQScore % 10;
             const winnerName = squareOwners[`${aDigit}-${hDigit}`] || "Unclaimed";
             
+            // Store the winner for the sidebar leaderboard
             winnersByQuarter[i] = winnerName;
 
             const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
             if (el) {
-                // Apply past-winner styling since the quarter is officially locked
+                // Apply the static blue background for completed quarters
                 el.classList.add('past-winner');
                 
+                // Generate the corner badge (Q1, Q2, Q3, or F)
                 const badgeClass = `q${i + 1}`;
                 if (!el.querySelector(`.${badgeClass}`)) {
                     const badge = document.createElement('span');
