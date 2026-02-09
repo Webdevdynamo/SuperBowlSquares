@@ -58,6 +58,9 @@ async function init() {
         const away = data.teams.find(t => t.homeAway === "Away");
         const home = data.teams.find(t => t.homeAway === "Home");
 
+
+        console.log(data);
+
         if (away && home) {
             updateLabels(data.settings.title, away, home, data.settings.startTime, data.status, data.settings.payouts);
             updateBoxScore(away, home);
