@@ -268,28 +268,22 @@ function updateWinnersAndPayouts(away, home, status) {
         const awayQScore = away.quarters[i];
         const homeQScore = home.quarters[i];
         
-        // --- THE LOGIC FIX ---
-        // We only "lock in" a winner for a quarter if:
-        // 1. It's the Final quarter and the game is over.
-        // 2. OR the NEXT quarter has a different score (meaning this one finished).
-        // 3. OR it's the first quarter and the score is non-zero.
-        
-        let isQuarterComplete = false;
-        
-        if (isGameOver && i === 3) {
-            isQuarterComplete = true; // Final is done
-        } else if (i < 3) {
-            // Check if the next quarter has a recorded score that differs from this one
-            const nextAway = away.quarters[i+1];
-            const nextHome = home.quarters[i+1];
-            
-            // If the next quarter's score is different, then 'i' is definitely finished
-            if (nextAway !== awayQScore || nextHome !== homeQScore) {
-                isQuarterComplete = true;
-            }
+        // THE API-DRIVEN FIX:
+        // Determine current period from the API (e.g., "1", "2", "Halftime", "Final")
+        // Most APIs provide a numeric period or a status string like "Q2" or "3"
+        const currentPeriod = parseInt(data.status.replace(/\D/g, '')) || 0; 
+        const isGameOver = (data.status === "Final" || data.status === "Completed");
+
+        // A quarter is complete only if we have progressed past it 
+        // (e.g., to see Q1 winner, we must be in Q2 or later)
+        let isThisQuarterDone = (i + 1 < currentPeriod) || isGameOver;
+
+        // Special case for Halftime: if it's Halftime, Q1 and Q2 are definitely done
+        if (data.status === "Halftime" || data.status === "HT") {
+            if (i < 2) isThisQuarterDone = true;
         }
 
-        if (isGameStarted && isQuarterComplete) {
+        if (isGameStarted && isThisQuarterDone) {
             const aDigit = awayQScore % 10;
             const hDigit = homeQScore % 10;
             const winnerName = squareOwners[`${aDigit}-${hDigit}`] || "Unclaimed";
