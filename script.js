@@ -224,16 +224,11 @@ function updateBoxScore(away, home) {
     if (!tbody) return;
 
     tbody.innerHTML = [away, home].map(t => {
-        // Create an array of quarter displays
-        const quarterDisplays = t.quarters.map((q, i) => {
-            // If the quarter score is the same as the total but it's a later quarter, 
-            // and the team hasn't technically reached that period, show 0.
-            // A simpler way: If the current period from the API is less than this index, show 0.
-            
-            // For now, let's use a "running total" check: 
-            // If this quarter's raw value is 0, show 0.
-            return q > 0 ? q : 0;
-        });
+        let q1 = t.quarters[0];
+        // If Q2 is same as Q1, it means no points were scored in Q2 OR Q2 hasn't started.
+        let q2 = (t.quarters[1] > t.quarters[0]) ? t.quarters[1] : 0;
+        let q3 = (t.quarters[2] > t.quarters[1]) ? t.quarters[2] : 0;
+        let q4 = (t.quarters[3] > t.quarters[2]) ? t.quarters[3] : 0;
 
         return `
             <tr>
@@ -241,10 +236,10 @@ function updateBoxScore(away, home) {
                     <img src="${logoBase}${encodeURIComponent(t.fullName)} Logo.png" class="tiny-logo"> 
                     ${t.shortName}
                 </td>
-                <td>${quarterDisplays[0]}</td>
-                <td>${quarterDisplays[1]}</td>
-                <td>${quarterDisplays[2]}</td>
-                <td>${quarterDisplays[3]}</td>
+                <td>${q1}</td>
+                <td>${q2}</td>
+                <td>${q3}</td>
+                <td>${q4}</td>
                 <td class="final-col"><strong>${t.total}</strong></td>
             </tr>
         `;
