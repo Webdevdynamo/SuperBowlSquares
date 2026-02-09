@@ -139,6 +139,7 @@ async function updateScore() {
         const home = data.teams.find(t => t.homeAway === "Home");
         
         // Inside updateScore()
+        console.log(data.value[0].games[0]);
         const currentPeriod = parseInt(data.value[0].games[0].currentPlayingPeriod.number);
 
         if (!away || !home) return;
