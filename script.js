@@ -267,36 +267,31 @@ function updateWinnersAndPayouts(away, home, status) {
     for (let i = 0; i < 4; i++) {
         const awayQScore = away.quarters[i];
         const homeQScore = home.quarters[i];
-        const combinedScore = awayQScore + homeQScore;
+        
+        // THE FIX: 
+        // A quarter only has a "Final" winner if that quarter is finished.
+        // We check if the score for the NEXT quarter has started, 
+        // or if the game is completely over.
+        const isThisQuarterDone = (i < 3 && (away.quarters[i+1] > 0 || home.quarters[i+1] > 0)) || isGameOver;
 
-        if (isGameStarted && (combinedScore > 0 || isGameOver)) {
+        if (isGameStarted && isThisQuarterDone) {
             const aDigit = awayQScore % 10;
             const hDigit = homeQScore % 10;
             const winnerName = squareOwners[`${aDigit}-${hDigit}`] || "Unclaimed";
             
-            // Determine "Current Quarter" index
-            const latestQuarterIdx = away.quarters.findLastIndex(q => q > 0);
+            winnersByQuarter[i] = winnerName;
 
-            if (i <= latestQuarterIdx || isGameOver) {
-                winnersByQuarter[i] = winnerName; // Store for the leaderboard
-
-                const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
-                if (el) {
-                    const isLatest = (i === latestQuarterIdx) || isGameOver;
-                    el.classList.add(isLatest ? 'active-winner' : 'past-winner');
-                    
-                    // THE FIX: Check if THIS specific quarter badge already exists
-                    // This prevents badges from piling up on every 60-second refresh
-                    const badgeClass = `q${i + 1}`;
-                    if (!el.querySelector(`.${badgeClass}`)) {
-                        const badge = document.createElement('span');
-                        
-                        // Apply the base style AND the corner-specific class (q1, q2, q3, or q4)
-                        badge.className = `q-badge ${badgeClass}`;
-                        
-                        badge.innerText = (i === 3) ? 'F' : `Q${i + 1}`;
-                        el.appendChild(badge);
-                    }
+            const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
+            if (el) {
+                // Apply past-winner styling since the quarter is officially locked
+                el.classList.add('past-winner');
+                
+                const badgeClass = `q${i + 1}`;
+                if (!el.querySelector(`.${badgeClass}`)) {
+                    const badge = document.createElement('span');
+                    badge.className = `q-badge ${badgeClass}`;
+                    badge.innerText = (i === 3) ? 'F' : `Q${i + 1}`;
+                    el.appendChild(badge);
                 }
             }
         }
