@@ -51,8 +51,7 @@ async function init() {
 
         // 2. Render the physical grid
         renderStaticGrid();
-
-        const currentPeriod = parseInt(data.value[0].games[0].currentPlayingPeriod.number);
+        
 
         // 3. Process the first score update immediately using the data we just got
         // This ensures the leaderboard and highlight populate on frame 1
@@ -62,7 +61,7 @@ async function init() {
         if (away && home) {
             updateLabels(data.settings.title, away, home, data.settings.startTime, data.status, data.settings.payouts);
             updateBoxScore(away, home);
-            updateWinnersAndPayouts(away, home, data.status, currentPeriod);
+            updateWinnersAndPayouts(away, home, data.status);
             highlightWinner(away.total, home.total, data.status);
         }
 
