@@ -268,13 +268,28 @@ function updateWinnersAndPayouts(away, home, status) {
         const awayQScore = away.quarters[i];
         const homeQScore = home.quarters[i];
         
-        // THE FIX: 
-        // A quarter only has a "Final" winner if that quarter is finished.
-        // We check if the score for the NEXT quarter has started, 
-        // or if the game is completely over.
-        const isThisQuarterDone = (i < 3 && (away.quarters[i+1] > 0 || home.quarters[i+1] > 0)) || isGameOver;
+        // --- THE LOGIC FIX ---
+        // We only "lock in" a winner for a quarter if:
+        // 1. It's the Final quarter and the game is over.
+        // 2. OR the NEXT quarter has a different score (meaning this one finished).
+        // 3. OR it's the first quarter and the score is non-zero.
+        
+        let isQuarterComplete = false;
+        
+        if (isGameOver && i === 3) {
+            isQuarterComplete = true; // Final is done
+        } else if (i < 3) {
+            // Check if the next quarter has a recorded score that differs from this one
+            const nextAway = away.quarters[i+1];
+            const nextHome = home.quarters[i+1];
+            
+            // If the next quarter's score is different, then 'i' is definitely finished
+            if (nextAway !== awayQScore || nextHome !== homeQScore) {
+                isQuarterComplete = true;
+            }
+        }
 
-        if (isGameStarted && isThisQuarterDone) {
+        if (isGameStarted && isQuarterComplete) {
             const aDigit = awayQScore % 10;
             const hDigit = homeQScore % 10;
             const winnerName = squareOwners[`${aDigit}-${hDigit}`] || "Unclaimed";
@@ -283,7 +298,6 @@ function updateWinnersAndPayouts(away, home, status) {
 
             const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
             if (el) {
-                // Apply past-winner styling since the quarter is officially locked
                 el.classList.add('past-winner');
                 
                 const badgeClass = `q${i + 1}`;
