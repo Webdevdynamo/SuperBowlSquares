@@ -59,12 +59,11 @@ async function init() {
         const home = data.teams.find(t => t.homeAway === "Home");
 
 
-        console.log(data);
 
         if (away && home) {
             updateLabels(data.settings.title, away, home, data.settings.startTime, data.status, data.settings.payouts);
             updateBoxScore(away, home);
-            updateWinnersAndPayouts(away, home, data.status);
+            updateWinnersAndPayouts(away, home, data.status, data.period);
             highlightWinner(away.total, home.total, data.status);
         }
 
@@ -143,7 +142,6 @@ async function updateScore() {
         
         // Inside updateScore()
         console.log(data);
-        const currentPeriod = parseInt(data.value[0].games[0].currentPlayingPeriod.number);
 
         if (!away || !home) return;
 
@@ -152,7 +150,7 @@ async function updateScore() {
             updateLabels(data.settings.title, away, home, data.settings.startTime, data.status, data.settings.payouts);
             updateBoxScore(away, home);
             // Add 'data.status' as the third argument here
-            updateWinnersAndPayouts(away, home, data.status,currentPeriod); 
+            updateWinnersAndPayouts(away, home, data.status, data.period); 
             highlightWinner(away.total, home.total, data.status);
         });
 
