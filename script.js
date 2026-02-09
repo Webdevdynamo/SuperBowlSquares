@@ -268,20 +268,11 @@ function updateWinnersAndPayouts(away, home, status) {
         const awayQScore = away.quarters[i];
         const homeQScore = home.quarters[i];
         
-        // THE API-DRIVEN FIX:
-        // Determine current period from the API (e.g., "1", "2", "Halftime", "Final")
-        // Most APIs provide a numeric period or a status string like "Q2" or "3"
-        const currentPeriod = parseInt(data.status.replace(/\D/g, '')) || 0; 
-        const isGameOver = (data.status === "Final" || data.status === "Completed");
-
-        // A quarter is complete only if we have progressed past it 
-        // (e.g., to see Q1 winner, we must be in Q2 or later)
-        let isThisQuarterDone = (i + 1 < currentPeriod) || isGameOver;
-
-        // Special case for Halftime: if it's Halftime, Q1 and Q2 are definitely done
-        if (data.status === "Halftime" || data.status === "HT") {
-            if (i < 2) isThisQuarterDone = true;
-        }
+        // THE FIX: 
+        // A quarter only has a "Final" winner if that quarter is finished.
+        // We check if the score for the NEXT quarter has started, 
+        // or if the game is completely over.
+        const isThisQuarterDone = (i < 3 && (away.quarters[i+1] > 0 || home.quarters[i+1] > 0)) || isGameOver;
 
         if (isGameStarted && isThisQuarterDone) {
             const aDigit = awayQScore % 10;
@@ -292,6 +283,7 @@ function updateWinnersAndPayouts(away, home, status) {
 
             const el = document.getElementById(`sq-${aDigit}-${hDigit}`);
             if (el) {
+                // Apply past-winner styling since the quarter is officially locked
                 el.classList.add('past-winner');
                 
                 const badgeClass = `q${i + 1}`;
