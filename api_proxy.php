@@ -17,6 +17,12 @@ if (!$match) {
 // Fetch Live Score
 $msnJson = file_get_contents($match['api_url']);
 $msnData = json_decode($msnJson, true);
+
+// Extract the numeric quarter (e.g., "1", "2", "3", "4")
+// In your MSN data, it's inside the 'games' array
+$game = $msnData['value'][0]['games'][0];
+$periodNumber = $game['currentPlayingPeriod']['number'] ?? 1;
+
 $game = $msnData['value'][0]['games'][0];
 
 // Handle different MSN date keys and formats
@@ -81,5 +87,6 @@ echo json_encode([
     ],
     'teams' => $processedTeams,
     'status' => $game['gameState']['detailedGameStatus'],
-    'squares' => $squaresData
+    'squares' => $squaresData,
+    "period" => (int)$periodNumber, // Now JS has the number "2"
 ]);
